@@ -3,109 +3,117 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="Sky Explorer AR prototype: camera-based augmented sky overlay for planets, stars and cosmic objects." />
+  <meta name="theme-color" content="#030711" />
+  <meta name="description" content="Sky Explorer AR — orientation-aware augmented sky prototype." />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
   <title>Sky Explorer AR</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div>
-        <p class="kicker">Sky Explorer AR</p>
-        <h1>Point your phone at the sky.</h1>
+  <main class="app-shell">
+    <section class="ar-experience" aria-label="Sky Explorer AR experience">
+      <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
+
+      <div id="cameraFallback" class="camera-fallback">
+        <div class="intro-card">
+          <div class="brand-orb"></div>
+          <p class="kicker">Sky Explorer AR</p>
+          <h1>Move your phone. The sky should move with you.</h1>
+          <p>
+            This build uses a sensor-driven sky dome. Objects have demo azimuth and altitude values,
+            so they shift as your phone orientation changes.
+          </p>
+          <div class="intro-actions">
+            <button id="startButton" class="primary-button" type="button">Start AR</button>
+            <button id="demoButton" class="secondary-button" type="button">Try Demo Sweep</button>
+          </div>
+          <p class="permission-note">Camera, location and motion are only used after permission.</p>
+        </div>
       </div>
-      <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">☾</button>
-    </header>
 
-    <main class="app-main">
-      <section class="ar-card">
-        <div class="ar-toolbar">
-          <button id="launchArButton" class="primary-button" type="button">Launch AR View</button>
-          <button id="locationButton" class="secondary-button" type="button">Use Location</button>
-          <button id="motionButton" class="secondary-button" type="button">Enable Motion</button>
-        </div>
+      <div class="space-gradient" aria-hidden="true"></div>
+      <canvas id="starCanvas" class="star-canvas" aria-hidden="true"></canvas>
 
-        <div id="arStage" class="ar-stage" aria-label="Camera based augmented sky overlay">
-          <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
-
-          <div id="cameraPlaceholder" class="camera-placeholder">
-            <div class="placeholder-panel">
-              <div class="radar-orbit">
-                <span></span><span></span><span></span>
-              </div>
-              <h2>Augmented sky overlay</h2>
-              <p>Launch the camera, then tap floating objects to explore them.</p>
-            </div>
+      <header class="top-hud">
+        <div class="brand">
+          <span class="brand-icon">✦</span>
+          <div>
+            <strong>Sky Explorer AR</strong>
+            <small id="modeLabel">Stage 1C orientation prototype</small>
           </div>
-
-          <div class="hud top-left">
-            <span id="locationReadout">Location: not enabled</span>
-            <span id="motionReadout">Motion: not enabled</span>
-          </div>
-
-          <div class="hud top-right">
-            <span id="headingReadout">Heading: demo</span>
-          </div>
-
-          <button class="sky-object object-sun" data-object="sun" type="button">
-            <span class="object-glow"></span><strong>Sun</strong><small>Star</small>
-          </button>
-          <button class="sky-object object-moon" data-object="moon" type="button">
-            <span class="object-glow"></span><strong>Moon</strong><small>Natural satellite</small>
-          </button>
-          <button class="sky-object object-mars" data-object="mars" type="button">
-            <span class="object-glow"></span><strong>Mars</strong><small>Planet</small>
-          </button>
-          <button class="sky-object object-jupiter" data-object="jupiter" type="button">
-            <span class="object-glow"></span><strong>Jupiter</strong><small>Gas giant</small>
-          </button>
-          <button class="sky-object object-blackhole" data-object="blackhole" type="button">
-            <span class="object-glow"></span><strong>Black Hole</strong><small>Extreme object</small>
-          </button>
-
-          <div class="reticle" aria-hidden="true"></div>
-          <div class="scanline" aria-hidden="true"></div>
         </div>
+        <button id="menuButton" class="hud-button" type="button" aria-label="Open mission panel">☰</button>
+      </header>
 
-        <p id="statusMessage" class="status" role="status">Stage 1B ready. Camera, location and motion are permission-based.</p>
-      </section>
+      <div class="sensor-hud">
+        <div><span>Heading</span><strong id="headingValue">—</strong></div>
+        <div><span>Pitch</span><strong id="pitchValue">—</strong></div>
+        <div><span>Location</span><strong id="locationValue">Off</strong></div>
+      </div>
 
-      <section class="insight-card">
-        <div class="section-title">
-          <p class="kicker">Object detail</p>
-          <h2 id="detailTitle">Select an object</h2>
-        </div>
+      <div class="compass-strip" aria-label="Compass">
+        <span>N</span><span>NE</span><span>E</span><span>SE</span><span>S</span><span>SW</span><span>W</span><span>NW</span>
+        <div id="compassNeedle" class="compass-needle"></div>
+      </div>
 
-        <article class="detail-card">
-          <div id="detailVisual" class="detail-visual visual-placeholder"></div>
-          <div class="detail-copy">
-            <p id="detailType" class="detail-type">Tap a floating AR object</p>
-            <p id="detailDescription">Details, scale, distance and guided explanations appear here.</p>
+      <div id="skyLayer" class="sky-layer" aria-label="Augmented sky objects"></div>
 
-            <div class="stats">
-              <div><span>Distance</span><strong id="detailDistance">—</strong></div>
-              <div><span>Size</span><strong id="detailSize">—</strong></div>
-              <div><span>Visibility</span><strong id="detailVisibility">—</strong></div>
-            </div>
+      <div class="reticle" aria-hidden="true">
+        <span></span>
+      </div>
 
-            <button id="whatSeeingButton" class="wide-button" type="button">What am I seeing now?</button>
-            <p id="guideText" class="guide-text">The AI guide layer will later explain visible objects based on your live sky direction.</p>
+      <div id="guideBubble" class="guide-bubble">
+        <p class="kicker">Live Guide</p>
+        <p id="guideText">Start AR, enable motion, then pan across the room. Objects will shift across your camera view.</p>
+      </div>
+
+      <nav class="bottom-controls" aria-label="AR controls">
+        <button id="startButtonMini" class="control-button primary-control" type="button">
+          <span>AR</span><strong>Start</strong>
+        </button>
+        <button id="motionButton" class="control-button" type="button">
+          <span>Motion</span><strong>Enable</strong>
+        </button>
+        <button id="locationButton" class="control-button" type="button">
+          <span>GPS</span><strong>Use</strong>
+        </button>
+        <button id="whatButton" class="control-button" type="button">
+          <span>Guide</span><strong>Now</strong>
+        </button>
+      </nav>
+
+      <aside id="detailSheet" class="detail-sheet" aria-live="polite">
+        <button id="closeSheet" class="close-sheet" type="button" aria-label="Close object detail">×</button>
+        <div id="detailVisual" class="detail-visual visual-sun"></div>
+        <div class="detail-content">
+          <p id="detailEyebrow" class="kicker">Star</p>
+          <h2 id="detailTitle">Sun</h2>
+          <p id="detailDescription">The Sun is the star at the center of our solar system.</p>
+          <div class="detail-grid">
+            <div><span>Distance</span><strong id="detailDistance">149.6m km</strong></div>
+            <div><span>Size</span><strong id="detailSize">1.39m km</strong></div>
+            <div><span>Sky position</span><strong id="detailPosition">Demo</strong></div>
           </div>
-        </article>
-      </section>
-
-      <section class="roadmap-card">
-        <p class="kicker">Stage-gate roadmap</p>
-        <div class="roadmap-grid">
-          <article><strong>1B</strong><span>Mobile AR overlay, object cards, location/motion permissions</span></article>
-          <article><strong>1C</strong><span>Real sky engine: time, location, azimuth and altitude</span></article>
-          <article><strong>2A</strong><span>Premium visual design, richer object library and guided journeys</span></article>
-          <article><strong>3A</strong><span>PWA install flow, monetization architecture and account model</span></article>
+          <button id="journeyButton" class="sheet-action" type="button">Start Cosmic Journey</button>
         </div>
-      </section>
-    </main>
-  </div>
+      </aside>
+
+      <aside id="missionPanel" class="mission-panel">
+        <button id="closeMission" class="close-sheet" type="button" aria-label="Close mission panel">×</button>
+        <p class="kicker">Product cockpit</p>
+        <h2>Stage 1C quality gates</h2>
+        <ul>
+          <li>Objects move relative to phone orientation.</li>
+          <li>Object detail stays inside the AR screen.</li>
+          <li>Camera, location and motion require explicit permission.</li>
+          <li>No visible security/debug section in the product UI.</li>
+          <li>Next stage: replace demo sky positions with real astronomy engine.</li>
+        </ul>
+      </aside>
+
+      <div id="toast" class="toast" role="status">Ready.</div>
+    </section>
+  </main>
 
   <script src="script.js"></script>
 </body>

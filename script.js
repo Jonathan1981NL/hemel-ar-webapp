@@ -1,187 +1,392 @@
-const objectData = {
-  sun: {
-    title: "Sun",
+const skyObjects = [
+  {
+    id: "sun",
+    name: "Sun",
     type: "Star",
-    description: "The Sun is the star at the center of our solar system. It gives Earth light, warmth and the energy that makes life possible.",
-    distance: "149.6 million km",
-    size: "1.39 million km diameter",
-    visibility: "Daytime only",
+    az: 96,
+    alt: 18,
+    core: "core-sun",
     visual: "visual-sun",
-    guide: "You selected the Sun. In the final app, this object will be positioned using your time, location and sky direction."
+    distance: "149.6m km",
+    size: "1.39m km diameter",
+    description: "The Sun is the star at the center of our solar system. It is shown here as a demo sky-dome object."
   },
-  moon: {
-    title: "Moon",
+  {
+    id: "moon",
+    name: "Moon",
     type: "Natural satellite",
-    description: "The Moon is Earth's companion and the brightest object in the night sky. Its phase changes as it orbits Earth.",
+    az: 128,
+    alt: 31,
+    core: "core-moon",
+    visual: "visual-moon",
     distance: "384,400 km avg",
     size: "3,474 km diameter",
-    visibility: "Often visible day or night",
-    visual: "visual-moon",
-    guide: "You selected the Moon. Next we will add moon phase, rise/set time and real position."
+    description: "The Moon is Earth's natural satellite. In the next stage this will include real phase and live position."
   },
-  mars: {
-    title: "Mars",
+  {
+    id: "mars",
+    name: "Mars",
     type: "Planet",
-    description: "Mars is the red planet, known for dusty landscapes, polar caps, ancient river valleys and future human exploration potential.",
-    distance: "~225 million km avg",
-    size: "6,779 km diameter",
-    visibility: "Night sky when above horizon",
+    az: 178,
+    alt: 8,
+    core: "core-mars",
     visual: "visual-mars",
-    guide: "You selected Mars. Later, this will include live visibility and constellation context."
+    distance: "~225m km avg",
+    size: "6,779 km diameter",
+    description: "Mars is the red planet, known for dust storms, polar caps and future exploration potential."
   },
-  jupiter: {
-    title: "Jupiter",
+  {
+    id: "jupiter",
+    name: "Jupiter",
     type: "Gas giant",
-    description: "Jupiter is the largest planet in the solar system. It has powerful storms, dozens of moons and a huge magnetic field.",
-    distance: "~778 million km avg",
-    size: "139,820 km diameter",
-    visibility: "Bright when visible",
+    az: 236,
+    alt: 26,
+    core: "core-jupiter",
     visual: "visual-jupiter",
-    guide: "You selected Jupiter. In Stage 1C we will add real azimuth and altitude calculations."
+    distance: "~778m km avg",
+    size: "139,820 km diameter",
+    description: "Jupiter is the largest planet in the solar system. Its detail layer will later include moons and live visibility."
   },
-  blackhole: {
-    title: "Black Hole",
-    type: "Extreme cosmic object",
-    description: "A black hole is a region where gravity is so intense that not even light can escape beyond the event horizon.",
+  {
+    id: "saturn",
+    name: "Saturn",
+    type: "Ringed planet",
+    az: 294,
+    alt: 15,
+    core: "core-saturn",
+    visual: "visual-saturn",
+    distance: "~1.43bn km avg",
+    size: "116,460 km diameter",
+    description: "Saturn is known for its spectacular ring system. This object is added to make the sky layer feel richer."
+  },
+  {
+    id: "blackhole",
+    name: "Black Hole",
+    type: "Deep-space layer",
+    az: 342,
+    alt: 42,
+    core: "core-blackhole",
+    visual: "visual-blackhole",
     distance: "Depends on object",
     size: "Depends on mass",
-    visibility: "Not directly visible",
-    visual: "visual-blackhole",
-    guide: "You selected a black hole. In the final app, this can become an educational deep-space layer rather than a live visible sky object."
+    description: "Black holes are not directly visible like planets. In this app they belong to a premium educational deep-space layer."
   }
+];
+
+const state = {
+  cameraOn: false,
+  motionOn: false,
+  locationOn: false,
+  heading: 96,
+  pitch: 16,
+  roll: 0,
+  selected: null,
+  demoSweep: false,
+  demoStart: 0,
+  stars: []
 };
 
-const els = {
-  launch: document.getElementById("launchArButton"),
-  location: document.getElementById("locationButton"),
+const el = {
+  camera: document.getElementById("cameraFeed"),
+  fallback: document.getElementById("cameraFallback"),
+  skyLayer: document.getElementById("skyLayer"),
+  starCanvas: document.getElementById("starCanvas"),
+  start: document.getElementById("startButton"),
+  startMini: document.getElementById("startButtonMini"),
+  demo: document.getElementById("demoButton"),
   motion: document.getElementById("motionButton"),
-  theme: document.getElementById("themeToggle"),
-  video: document.getElementById("cameraFeed"),
-  placeholder: document.getElementById("cameraPlaceholder"),
-  status: document.getElementById("statusMessage"),
-  locationReadout: document.getElementById("locationReadout"),
-  motionReadout: document.getElementById("motionReadout"),
-  headingReadout: document.getElementById("headingReadout"),
+  location: document.getElementById("locationButton"),
+  what: document.getElementById("whatButton"),
+  menu: document.getElementById("menuButton"),
+  mission: document.getElementById("missionPanel"),
+  closeMission: document.getElementById("closeMission"),
+  sheet: document.getElementById("detailSheet"),
+  closeSheet: document.getElementById("closeSheet"),
+  visual: document.getElementById("detailVisual"),
+  eyebrow: document.getElementById("detailEyebrow"),
   title: document.getElementById("detailTitle"),
-  type: document.getElementById("detailType"),
   description: document.getElementById("detailDescription"),
   distance: document.getElementById("detailDistance"),
   size: document.getElementById("detailSize"),
-  visibility: document.getElementById("detailVisibility"),
-  visual: document.getElementById("detailVisual"),
+  position: document.getElementById("detailPosition"),
+  journey: document.getElementById("journeyButton"),
   guide: document.getElementById("guideText"),
-  whatSeeing: document.getElementById("whatSeeingButton"),
-  objects: Array.from(document.querySelectorAll(".sky-object"))
+  headingValue: document.getElementById("headingValue"),
+  pitchValue: document.getElementById("pitchValue"),
+  locationValue: document.getElementById("locationValue"),
+  compassNeedle: document.getElementById("compassNeedle"),
+  toast: document.getElementById("toast"),
+  modeLabel: document.getElementById("modeLabel")
 };
 
-let selectedObject = null;
-
-function selectObject(key) {
-  const data = objectData[key];
-  if (!data) return;
-
-  selectedObject = key;
-  els.title.textContent = data.title;
-  els.type.textContent = data.type;
-  els.description.textContent = data.description;
-  els.distance.textContent = data.distance;
-  els.size.textContent = data.size;
-  els.visibility.textContent = data.visibility;
-  els.guide.textContent = data.guide;
-  els.visual.className = `detail-visual ${data.visual}`;
-
-  els.objects.forEach((button) => {
-    button.classList.toggle("active", button.dataset.object === key);
-  });
-
-  els.status.textContent = `${data.title} selected.`;
+function normalizeAngle(degrees) {
+  return ((degrees % 360) + 360) % 360;
 }
 
-els.objects.forEach((button) => {
-  button.addEventListener("click", () => selectObject(button.dataset.object));
-});
+function shortestAngleDelta(target, current) {
+  let delta = normalizeAngle(target) - normalizeAngle(current);
+  if (delta > 180) delta -= 360;
+  if (delta < -180) delta += 360;
+  return delta;
+}
 
-els.launch.addEventListener("click", async () => {
+function showToast(message) {
+  el.toast.textContent = message;
+  el.toast.classList.add("show");
+  window.clearTimeout(showToast.timer);
+  showToast.timer = window.setTimeout(() => el.toast.classList.remove("show"), 2200);
+}
+
+function buildSkyObjects() {
+  el.skyLayer.innerHTML = "";
+  skyObjects.forEach((obj) => {
+    const button = document.createElement("button");
+    button.className = "sky-object";
+    button.type = "button";
+    button.dataset.id = obj.id;
+    button.innerHTML = `
+      <span class="object-core ${obj.core}"></span>
+      <span class="object-label"><strong>${obj.name}</strong><small>${obj.type}</small></span>
+    `;
+    button.addEventListener("click", () => selectObject(obj.id));
+    el.skyLayer.appendChild(button);
+  });
+}
+
+function renderSky() {
+  const width = window.innerWidth || 1;
+  const height = window.innerHeight || 1;
+  const fovX = 72;
+  const fovY = 58;
+
+  skyObjects.forEach((obj) => {
+    const node = el.skyLayer.querySelector(`[data-id="${obj.id}"]`);
+    if (!node) return;
+
+    const dx = shortestAngleDelta(obj.az, state.heading);
+    const dy = obj.alt - state.pitch;
+
+    const visible = Math.abs(dx) < fovX / 1.65 && Math.abs(dy) < fovY / 1.45;
+    const x = 50 + (dx / (fovX / 2)) * 50;
+    const y = 50 - (dy / (fovY / 2)) * 50;
+    const edgeFade = Math.max(Math.abs(dx) / (fovX / 2), Math.abs(dy) / (fovY / 2));
+    const scale = Math.max(0.72, 1.08 - edgeFade * 0.2);
+
+    node.style.setProperty("--x", `${x}%`);
+    node.style.setProperty("--y", `${y}%`);
+    node.style.setProperty("--scale", `${scale}`);
+    node.classList.toggle("visible", visible);
+    node.classList.toggle("selected", state.selected === obj.id);
+  });
+
+  el.headingValue.textContent = `${Math.round(state.heading)}°`;
+  el.pitchValue.textContent = `${Math.round(state.pitch)}°`;
+  el.compassNeedle.style.transform = `translateX(${shortestAngleDelta(0, state.heading) * -1.2}px)`;
+  drawStars();
+  window.requestAnimationFrame(renderSky);
+}
+
+function selectObject(id) {
+  const obj = skyObjects.find((item) => item.id === id);
+  if (!obj) return;
+
+  state.selected = id;
+  el.eyebrow.textContent = obj.type;
+  el.title.textContent = obj.name;
+  el.description.textContent = obj.description;
+  el.distance.textContent = obj.distance;
+  el.size.textContent = obj.size;
+  el.position.textContent = `Az ${obj.az}° / Alt ${obj.alt}°`;
+  el.visual.className = `detail-visual ${obj.visual}`;
+  el.sheet.classList.add("open");
+
+  el.guide.textContent = `${obj.name} selected. The detail panel stays inside the AR screen, so you do not leave the camera experience.`;
+  showToast(`${obj.name} selected`);
+}
+
+async function startCamera() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    els.status.textContent = "Camera access is not supported in this browser.";
+    showToast("Camera not supported in this browser");
     return;
   }
 
   try {
-    els.status.textContent = "Opening camera...";
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" } },
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      },
       audio: false
     });
-
-    els.video.srcObject = stream;
-    els.video.style.display = "block";
-    els.placeholder.style.display = "none";
-    els.status.textContent = "AR View active. Tap the floating objects.";
+    el.camera.srcObject = stream;
+    el.camera.style.display = "block";
+    el.fallback.classList.add("hidden");
+    state.cameraOn = true;
+    el.modeLabel.textContent = "Camera active";
+    showToast("AR camera active");
   } catch (error) {
-    els.status.textContent = "Camera permission denied or unavailable.";
+    showToast("Camera permission denied");
   }
-});
+}
 
-els.location.addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    els.status.textContent = "Geolocation is not supported on this device.";
-    return;
-  }
-
-  els.status.textContent = "Requesting location permission...";
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const lat = pos.coords.latitude.toFixed(2);
-      const lon = pos.coords.longitude.toFixed(2);
-      els.locationReadout.textContent = `Location: ${lat}, ${lon}`;
-      els.status.textContent = "Location enabled for future sky positioning.";
-    },
-    () => {
-      els.status.textContent = "Location permission denied or unavailable.";
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-  );
-});
-
-els.motion.addEventListener("click", async () => {
+async function enableMotion() {
   try {
     if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
       const permission = await DeviceOrientationEvent.requestPermission();
       if (permission !== "granted") {
-        els.status.textContent = "Motion permission denied.";
+        showToast("Motion permission denied");
         return;
       }
     }
 
-    window.addEventListener("deviceorientation", handleOrientation, true);
-    els.motionReadout.textContent = "Motion: enabled";
-    els.status.textContent = "Motion enabled. Demo overlay will react to phone orientation.";
+    window.addEventListener("deviceorientation", onOrientation, true);
+    state.motionOn = true;
+    state.demoSweep = false;
+    el.modeLabel.textContent = "Motion sky-dome active";
+    showToast("Motion tracking enabled");
   } catch (error) {
-    els.status.textContent = "Motion permission unavailable on this device.";
+    showToast("Motion unavailable on this device");
   }
-});
-
-function handleOrientation(event) {
-  const alpha = Number.isFinite(event.alpha) ? Math.round(event.alpha) : null;
-  const beta = Number.isFinite(event.beta) ? Math.round(event.beta) : null;
-  const gamma = Number.isFinite(event.gamma) ? Math.round(event.gamma) : null;
-
-  if (alpha !== null) els.headingReadout.textContent = `Heading: ${alpha}°`;
-  els.motionReadout.textContent = `Motion: ${beta ?? "—"} / ${gamma ?? "—"}`;
-
-  document.documentElement.style.setProperty("--tilt-x", `${(gamma || 0) * 0.2}px`);
-  document.documentElement.style.setProperty("--tilt-y", `${(beta || 0) * 0.12}px`);
 }
 
-els.theme.addEventListener("click", () => {
-  document.body.classList.toggle("light");
-  els.theme.textContent = document.body.classList.contains("light") ? "☀" : "☾";
+function onOrientation(event) {
+  if (typeof event.alpha === "number") {
+    state.heading = normalizeAngle(event.alpha);
+  }
+
+  if (typeof event.beta === "number") {
+    const pitch = 90 - Math.abs(event.beta);
+    state.pitch = Math.max(-20, Math.min(70, pitch));
+  }
+
+  if (typeof event.gamma === "number") {
+    state.roll = event.gamma;
+  }
+}
+
+function enableLocation() {
+  if (!navigator.geolocation) {
+    showToast("Location not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      state.locationOn = true;
+      el.locationValue.textContent = `${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+      showToast("Location enabled");
+    },
+    () => showToast("Location permission denied"),
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
+function startDemoSweep() {
+  state.demoSweep = !state.demoSweep;
+  state.demoStart = performance.now();
+  if (state.demoSweep) {
+    el.fallback.classList.add("hidden");
+    showToast("Demo sweep active");
+    el.modeLabel.textContent = "Demo sweep active";
+  } else {
+    showToast("Demo sweep paused");
+  }
+}
+
+function updateDemoSweep(time) {
+  if (state.demoSweep && !state.motionOn) {
+    const t = (time - state.demoStart) / 1000;
+    state.heading = normalizeAngle(96 + Math.sin(t * 0.34) * 170 + t * 6);
+    state.pitch = 22 + Math.sin(t * 0.72) * 18;
+  }
+  window.requestAnimationFrame(updateDemoSweep);
+}
+
+function explainCurrentView() {
+  const inView = skyObjects
+    .map((obj) => ({ obj, dx: Math.abs(shortestAngleDelta(obj.az, state.heading)), dy: Math.abs(obj.alt - state.pitch) }))
+    .filter((item) => item.dx < 44 && item.dy < 34)
+    .sort((a, b) => (a.dx + a.dy) - (b.dx + b.dy))
+    .map((item) => item.obj.name);
+
+  if (inView.length) {
+    el.guide.textContent = `In this demo sky direction you are near: ${inView.join(", ")}. Stage 1D will replace demo positions with real astronomical calculations.`;
+  } else {
+    el.guide.textContent = "No demo object is centered right now. Slowly pan left or right and the augmented objects will enter the camera view.";
+  }
+  showToast("Guide updated");
+}
+
+function startJourney() {
+  const selected = skyObjects.find((item) => item.id === state.selected);
+  if (!selected) return;
+  el.guide.textContent = `Cosmic Journey preview: travelling to ${selected.name}. Next stage can turn this into a premium scale-and-distance simulator.`;
+  showToast("Journey preview queued");
+}
+
+function setupStars() {
+  const canvas = el.starCanvas;
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = Math.floor(window.innerWidth * ratio);
+  canvas.height = Math.floor(window.innerHeight * ratio);
+  canvas.style.width = `${window.innerWidth}px`;
+  canvas.style.height = `${window.innerHeight}px`;
+
+  state.stars = Array.from({ length: 120 }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: Math.random() * 1.4 + 0.25,
+    a: Math.random() * 0.7 + 0.25
+  }));
+}
+
+function drawStars() {
+  const canvas = el.starCanvas;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.save();
+  ctx.scale(ratio, ratio);
+
+  const parallaxX = shortestAngleDelta(state.heading, 180) * 0.4;
+  const parallaxY = state.pitch * -0.9;
+
+  state.stars.forEach((star) => {
+    const x = ((star.x * window.innerWidth + parallaxX) % window.innerWidth + window.innerWidth) % window.innerWidth;
+    const y = ((star.y * window.innerHeight + parallaxY) % window.innerHeight + window.innerHeight) % window.innerHeight;
+    ctx.beginPath();
+    ctx.globalAlpha = star.a;
+    ctx.fillStyle = "#ffffff";
+    ctx.arc(x, y, star.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  ctx.restore();
+}
+
+el.start.addEventListener("click", async () => {
+  await startCamera();
+  await enableMotion();
 });
 
-els.whatSeeing.addEventListener("click", () => {
-  const objectName = selectedObject ? objectData[selectedObject].title : "the demo sky overlay";
-  els.guide.textContent = `Prototype guide: you are viewing ${objectName}. In Stage 1C this will become a real sky interpretation based on GPS, time, compass heading and object altitude.`;
-});
+el.startMini.addEventListener("click", startCamera);
+el.motion.addEventListener("click", enableMotion);
+el.location.addEventListener("click", enableLocation);
+el.demo.addEventListener("click", startDemoSweep);
+el.what.addEventListener("click", explainCurrentView);
+el.menu.addEventListener("click", () => el.mission.classList.add("open"));
+el.closeMission.addEventListener("click", () => el.mission.classList.remove("open"));
+el.closeSheet.addEventListener("click", () => el.sheet.classList.remove("open"));
+el.journey.addEventListener("click", startJourney);
 
+window.addEventListener("resize", setupStars);
+
+buildSkyObjects();
+setupStars();
 selectObject("sun");
+el.sheet.classList.remove("open");
+window.requestAnimationFrame(renderSky);
+window.requestAnimationFrame(updateDemoSweep);

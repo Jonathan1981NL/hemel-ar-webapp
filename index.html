@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#050816"/>
-  <meta name="description" content="Sky Explorer AR prototype"/>
+  <meta name="description" content="Sky Explorer AR Stage 1G"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
   <title>Sky Explorer AR</title>
   <link rel="stylesheet" href="styles.css"/>
@@ -13,82 +13,101 @@
 <main class="app">
   <video id="camera" class="camera" autoplay muted playsinline></video>
   <canvas id="stars" class="stars"></canvas>
-  <div class="backdrop"></div>
+  <div class="grade"></div>
 
   <section id="startScreen" class="start-screen">
     <div class="start-card">
-      <div class="logo-system">
-        <div class="sun-mini"></div><div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div>
-      </div>
+      <div class="brand-system"><span></span><i class="r1"></i><i class="r2"></i><i class="r3"></i></div>
       <p class="kicker">Sky Explorer AR</p>
-      <h1>Explore the visible and invisible sky.</h1>
-      <p class="lead">A camera-first AR cockpit for planets, the Moon, the Sun, black holes and guided cosmic journeys.</p>
+      <h1>Find, compare and understand the sky.</h1>
+      <p class="lead">Primary mode is AR. Secondary mode is Explore: a non-AR observatory for planets, galaxies and deep-space learning.</p>
       <div class="start-actions">
-        <button id="startAR" class="btn primary">Start AR</button>
-        <button id="startDemo" class="btn secondary">Demo Sweep</button>
+        <button id="startAR" class="btn primary" type="button">Start AR</button>
+        <button id="startDemo" class="btn secondary" type="button">Demo Sweep</button>
+        <button id="startExplore" class="btn ghost" type="button">Explore Mode</button>
       </div>
-      <p class="note">Demo Sweep works immediately. Start AR asks for camera and motion permission.</p>
+      <p class="note">Demo Sweep works without permissions. GPS refines Sun and Moon positions with simplified astronomy calculations.</p>
     </div>
   </section>
 
-  <header class="hud-top">
-    <button id="homeBtn" class="brand"><span>✦</span><strong>Sky Explorer</strong></button>
+  <header class="hud">
+    <button id="homeBtn" class="brand" type="button"><span>✦</span><strong>Sky Explorer</strong></button>
     <div class="chips"><span id="headingChip">HDG 095°</span><span id="pitchChip">PIT 18°</span><span id="gpsChip">GPS off</span></div>
-    <button id="finderBtn" class="round">⌕</button>
+    <button id="finderBtn" class="round" type="button">⌕</button>
   </header>
 
-  <div class="compass"><div id="compassTrack"><span>N</span><span>NE</span><span>E</span><span>SE</span><span>S</span><span>SW</span><span>W</span><span>NW</span></div><i></i></div>
-
+  <div class="compass"><div id="compassTrack"><span>N</span><span>NE</span><span>E</span><span>SE</span><span>S</span><span>SW</span><span>W</span><span>NW</span></div><b></b></div>
   <div id="edgeLayer" class="edge-layer"></div>
   <div id="skyLayer" class="sky-layer"></div>
   <div class="reticle"><i></i></div>
 
-  <section class="guide">
-    <p class="kicker">Cosmic Guide</p>
-    <p id="guideText">Tap Demo Sweep to see the full interface immediately, or Start AR for camera mode.</p>
-  </section>
+  <section class="guide"><p class="kicker">Cosmic Guide</p><p id="guideText">Use Demo Sweep first. Then select an object and compare its real diameter against Earth.</p></section>
 
   <nav class="dock">
-    <button id="arBtn" class="dock-btn main"><span>AR</span><strong>Start</strong></button>
-    <button id="motionBtn" class="dock-btn"><span>Motion</span><strong>Track</strong></button>
-    <button id="gpsBtn" class="dock-btn"><span>GPS</span><strong>Locate</strong></button>
-    <button id="calibrateBtn" class="dock-btn"><span>North</span><strong>Align</strong></button>
-    <button id="tourBtn" class="dock-btn premium"><span>Tour</span><strong>Journey</strong></button>
+    <button id="arBtn" class="dock-btn main" type="button"><span>AR</span><strong>Start</strong></button>
+    <button id="motionBtn" class="dock-btn" type="button"><span>Motion</span><strong>Track</strong></button>
+    <button id="gpsBtn" class="dock-btn" type="button"><span>GPS</span><strong>Locate</strong></button>
+    <button id="exploreBtn" class="dock-btn" type="button"><span>Mode</span><strong>Explore</strong></button>
+    <button id="tourBtn" class="dock-btn premium" type="button"><span>Tour</span><strong>Journey</strong></button>
   </nav>
 
   <aside id="inspector" class="sheet inspector">
-    <button id="closeInspector" class="close">×</button>
+    <button class="close" data-close="inspector" type="button">×</button>
     <div class="visual-stage">
-      <div id="bigSphere" class="sphere texture-sun"><span></span></div>
-      <div class="earth-box"><div class="sphere earth"><span></span></div><small>Earth scale</small></div>
-      <div class="orbit-ring"></div>
+      <div class="scale-viewport">
+        <div class="scale-row">
+          <div class="scale-item selected-scale"><div id="bigSphere" class="sphere texture-sun"><span></span></div><small id="selectedScaleLabel">Sun</small></div>
+          <div class="scale-item earth-scale"><div id="earthSphere" class="sphere texture-earth"><span></span></div><small>Earth</small></div>
+        </div>
+      </div>
+      <div id="scaleModeLabel" class="scale-mode">Compressed proportional scale</div>
     </div>
-    <p id="tier" class="kicker">Essential</p>
+    <p id="objectType" class="kicker">Star</p>
     <h2 id="objectName">Sun</h2>
     <p id="summary">Object summary.</p>
     <div class="metrics">
-      <div><span>Scale</span><strong id="scale">—</strong></div>
-      <div><span>Distance</span><strong id="distance">—</strong></div>
-      <div><span>Position</span><strong id="position">—</strong></div>
+      <div><span>Diameter</span><strong id="diameterMetric">—</strong></div>
+      <div><span>vs Earth</span><strong id="earthRatioMetric">—</strong></div>
+      <div><span>Position</span><strong id="positionMetric">—</strong></div>
     </div>
-    <div class="tabs"><button data-tab="story" class="tab active">Story</button><button data-tab="data" class="tab">Data</button><button data-tab="scale" class="tab">Scale</button></div>
+    <div class="scale-ladder">
+      <div id="scaleBar" class="scale-bar"></div>
+    </div>
+    <div class="tabs"><button class="tab active" data-tab="story" type="button">Story</button><button class="tab" data-tab="data" type="button">Data</button><button class="tab" data-tab="scale" type="button">Scale</button></div>
     <div id="tabPanel" class="info-panel">Story</div>
-    <div class="sheet-actions"><button id="lockBtn" class="btn primary">Lock Target</button><button id="journeyBtn" class="btn secondary">Cosmic Journey</button></div>
+    <div class="sheet-actions"><button id="lockBtn" class="btn primary" type="button">Lock Target</button><button id="journeyBtn" class="btn secondary" type="button">Cosmic Journey</button></div>
   </aside>
 
   <aside id="finder" class="sheet finder">
-    <button id="closeFinder" class="close">×</button>
+    <button class="close" data-close="finder" type="button">×</button>
     <p class="kicker">Finder</p><h2>Search the sky</h2>
-    <input id="search" class="search" placeholder="Search planets, stars, galaxies..."/>
-    <div class="filters"><button class="filter active" data-filter="featured">Featured</button><button class="filter" data-filter="solar">Solar</button><button class="filter" data-filter="deep">Deep</button><button class="filter" data-filter="all">All</button></div>
+    <input id="search" class="search" placeholder="Search planets, galaxies, nebulae..."/>
+    <div class="filters"><button class="filter active" data-filter="featured" type="button">Featured</button><button class="filter" data-filter="solar" type="button">Solar</button><button class="filter" data-filter="deep" type="button">Deep</button><button class="filter" data-filter="all" type="button">All</button></div>
     <div id="targetList" class="target-list"></div>
   </aside>
 
   <aside id="tours" class="sheet tours">
-    <button id="closeTours" class="close">×</button>
+    <button class="close" data-close="tours" type="button">×</button>
     <p class="kicker">Guided journeys</p><h2>Choose a path</h2>
     <div id="tourList" class="target-list"></div>
   </aside>
+
+  <section id="explore" class="explore">
+    <button class="close explore-close" data-close="explore" type="button">×</button>
+    <div class="explore-head">
+      <div><p class="kicker">Explore Mode</p><h2>Non-AR Observatory</h2><p>Secondary mode for learning, searching and comparing objects without camera AR.</p></div>
+      <button id="backToAR" class="btn primary" type="button">Back to AR</button>
+    </div>
+    <div class="explore-grid">
+      <div class="orrery-card">
+        <div id="orrery" class="orrery"></div>
+      </div>
+      <div class="explore-panel">
+        <input id="exploreSearch" class="search" placeholder="Search catalogue..."/>
+        <div id="exploreList" class="explore-list"></div>
+      </div>
+    </div>
+  </section>
 
   <div id="toast" class="toast">Ready</div>
 </main>

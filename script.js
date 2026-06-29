@@ -1,76 +1,124 @@
-const objects = [
-  { id: 'sun', name: 'Zon', type: 'Ster', x: 19, y: 28, className: 'sun', distance: '149,6 miljoen km', fact: 'De energiebron van ons zonnestelsel. In AR wordt dit een belangrijk ankerpunt voor dag/nacht en tijdmachine-functies.' },
-  { id: 'mars', name: 'Mars', type: 'Planeet', x: 44, y: 42, className: 'mars', distance: 'Gemiddeld 225 miljoen km', fact: 'De rode planeet. Goede kandidaat voor detailpagina’s met missies, landschap en toekomstige premium content.' },
-  { id: 'jupiter', name: 'Jupiter', type: 'Gasreus', x: 68, y: 31, className: 'jupiter', distance: 'Gemiddeld 778 miljoen km', fact: 'De grootste planeet van ons zonnestelsel, ideaal voor schaalvergelijkingen en visuele impact.' },
-  { id: 'blackhole', name: 'Zwart gat', type: 'Deep-sky object', x: 79, y: 58, className: 'blackhole', distance: 'Educatieve visualisatie', fact: 'Niet zomaar zichtbaar met het blote oog. In deze app gebruiken we dit als educatieve laag, niet als live claim.' }
-];
+const objectData = {
+  sun: {
+    title: "Sun",
+    type: "Star",
+    description: "The Sun is the star at the center of our solar system. It powers life on Earth and dominates the sky with light and energy.",
+    distance: "149.6 million km",
+    size: "Diameter 1.39 million km",
+    highlight: "Source of light and heat",
+    visualClass: "visual-sun"
+  },
+  mars: {
+    title: "Mars",
+    type: "Planet",
+    description: "Mars is the red planet, known for its dusty landscapes, giant volcanoes, and strong potential for future exploration.",
+    distance: "~225 million km avg",
+    size: "Diameter 6,779 km",
+    highlight: "Known as the Red Planet",
+    visualClass: "visual-mars"
+  },
+  jupiter: {
+    title: "Jupiter",
+    type: "Gas Giant",
+    description: "Jupiter is the largest planet in our solar system, famous for its massive storms and the Great Red Spot.",
+    distance: "~778 million km avg",
+    size: "Diameter 139,820 km",
+    highlight: "Largest planet in the solar system",
+    visualClass: "visual-jupiter"
+  },
+  blackhole: {
+    title: "Black Hole",
+    type: "Extreme Object",
+    description: "A black hole is a region where gravity is so strong that not even light can escape. They are among the most fascinating objects in the universe.",
+    distance: "Varies by example",
+    size: "Depends on mass",
+    highlight: "Gravity so strong that light cannot escape",
+    visualClass: "visual-blackhole"
+  }
+};
 
-const skyView = document.querySelector('#skyView');
-const objectDetail = document.querySelector('#objectDetail');
-const statusMessage = document.querySelector('#statusMessage');
-const startSkyButton = document.querySelector('#startSkyButton');
-const locationButton = document.querySelector('#locationButton');
-const nightModeButton = document.querySelector('#nightModeButton');
+const detailTitle = document.getElementById("detailTitle");
+const detailType = document.getElementById("detailType");
+const detailDescription = document.getElementById("detailDescription");
+const detailDistance = document.getElementById("detailDistance");
+const detailSize = document.getElementById("detailSize");
+const detailHighlight = document.getElementById("detailHighlight");
+const detailVisual = document.getElementById("detailVisual");
+const statusMessage = document.getElementById("statusMessage");
+const themeToggle = document.getElementById("themeToggle");
+const launchArButton = document.getElementById("launchArButton");
+const locationButton = document.getElementById("locationButton");
+const cameraFeed = document.getElementById("cameraFeed");
+const cameraPlaceholder = document.getElementById("cameraPlaceholder");
+const objectButtons = Array.from(document.querySelectorAll(".sky-object"));
 
-function renderSky() {
-  objects.forEach((object) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = `sky-object ${object.className}`;
-    button.style.left = `${object.x}%`;
-    button.style.top = `${object.y}%`;
-    button.textContent = object.name;
-    button.setAttribute('aria-label', `${object.name} bekijken`);
-    button.addEventListener('click', () => selectObject(object));
-    skyView.appendChild(button);
+function updateDetails(key) {
+  const data = objectData[key];
+  if (!data) return;
+
+  detailTitle.textContent = data.title;
+  detailType.textContent = data.type;
+  detailDescription.textContent = data.description;
+  detailDistance.textContent = data.distance;
+  detailSize.textContent = data.size;
+  detailHighlight.textContent = data.highlight;
+  detailVisual.className = `detail-visual ${data.visualClass}`;
+
+  objectButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.object === key);
   });
+
+  statusMessage.textContent = `${data.title} selected.`;
 }
 
-function selectObject(object) {
-  objectDetail.innerHTML = `
-    <div class="planet-visual ${object.className}"></div>
-    <div>
-      <p class="eyebrow">${escapeHtml(object.type)}</p>
-      <h3>${escapeHtml(object.name)}</h3>
-      <p><strong>Afstand:</strong> ${escapeHtml(object.distance)}</p>
-      <p>${escapeHtml(object.fact)}</p>
-      <p class="helper-text">Volgende fase: echte data, zichtbaarheid, AI-uitleg, 3D-model en premium verdieping.</p>
-    </div>
-  `;
-  statusMessage.textContent = `${object.name} geselecteerd.`;
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
-}
-
-startSkyButton.addEventListener('click', () => {
-  document.querySelector('#sky-title').scrollIntoView({ behavior: 'smooth' });
-  statusMessage.textContent = 'Sky View geopend. Kies een object.';
+objectButtons.forEach((button) => {
+  button.addEventListener("click", () => updateDetails(button.dataset.object));
 });
 
-locationButton.addEventListener('click', () => {
+themeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("light");
+  themeToggle.textContent = document.body.classList.contains("light") ? "Dark mode" : "Night mode";
+});
+
+locationButton.addEventListener("click", () => {
   if (!navigator.geolocation) {
-    statusMessage.textContent = 'Locatie wordt niet ondersteund door deze browser.';
+    statusMessage.textContent = "Geolocation is not supported on this device.";
     return;
   }
-  statusMessage.textContent = 'Locatietoestemming gevraagd...';
+
+  statusMessage.textContent = "Requesting location permission...";
   navigator.geolocation.getCurrentPosition(
     (position) => {
-      const lat = position.coords.latitude.toFixed(2);
-      const lon = position.coords.longitude.toFixed(2);
-      statusMessage.textContent = `Locatie actief: ${lat}, ${lon}. In Stage 1B koppelen we hier echte hemeldata aan.`;
+      const { latitude, longitude } = position.coords;
+      statusMessage.textContent = `Location enabled. Lat ${latitude.toFixed(2)}, Lon ${longitude.toFixed(2)}.`;
     },
     () => {
-      statusMessage.textContent = 'Locatie niet gedeeld. De app blijft werken in demo-modus.';
+      statusMessage.textContent = "Location permission denied or unavailable.";
     },
-    { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
   );
 });
 
-nightModeButton.addEventListener('click', () => {
-  document.body.classList.toggle('light');
-  nightModeButton.textContent = document.body.classList.contains('light') ? 'Donkere modus' : 'Nachtmodus';
-});
+launchArButton.addEventListener("click", async () => {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    statusMessage.textContent = "Camera access is not supported in this browser.";
+    return;
+  }
 
-renderSky();
+  try {
+    statusMessage.textContent = "Opening camera...";
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: "environment" }
+      },
+      audio: false
+    });
+
+    cameraFeed.srcObject = stream;
+    cameraFeed.style.display = "block";
+    cameraPlaceholder.style.display = "none";
+    statusMessage.textContent = "AR View active. Tap any overlay object.";
+  } catch (error) {
+    statusMessage.textContent = "Camera permission denied or unavailable.";
+  }
+});

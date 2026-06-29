@@ -1,266 +1,138 @@
 <!doctype html>
-<html lang="nl">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Prototype web-app voor AR hemellichamen: planeten, sterren en kosmische objecten verkennen." />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
-  <title>Hemel AR — Prototype</title>
+  <meta name="description" content="Prototype MVP for an AR space app: explore planets and cosmic objects in an augmented camera overlay." />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
+  <title>Sky Explorer AR — Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="hero">
-    <nav class="nav" aria-label="Hoofdnavigatie">
-      <div class="brand">☄️ Hemel AR</div>
-      <button id="nightModeButton" class="ghost-button" type="button">Nachtmodus</button>
-    </nav>
-
-    <section class="hero-content">
-      <p class="eyebrow">Stage 1A web-app MVP</p>
-      <h1>Ontdek wat er boven je staat.</h1>
-      <p class="intro">Een eerste testbare versie voor een toekomstige AR-app over planeten, sterren, zwarte gaten en andere hemellichamen.</p>
-      <div class="hero-actions">
-        <button id="startSkyButton" class="primary-button" type="button">Start Sky View</button>
-        <button id="locationButton" class="secondary-button" type="button">Gebruik mijn locatie</button>
-      </div>
-      <p id="statusMessage" class="status" role="status">Prototype klaar. Nog geen locatie gebruikt.</p>
-    </section>
-  </header>
-
-  <main>
-    <section class="panel sky-panel" aria-labelledby="sky-title">
-      <div class="section-heading">
-        <p class="eyebrow">Live experience</p>
-        <h2 id="sky-title">Sky View</h2>
-      </div>
-      <div id="skyView" class="sky-view" aria-label="Interactieve hemelkaart">
-        <div class="horizon"></div>
-      </div>
-      <p class="helper-text">Tik op een object om details te bekijken. In latere fases wordt dit gekoppeld aan echte AR, kompas, tijd en astronomische data.</p>
-    </section>
-
-    <section class="panel" aria-labelledby="object-title">
-      <div class="section-heading">
-        <p class="eyebrow">Object detail</p>
-        <h2 id="object-title">Hemellichaam</h2>
-      </div>
-      <article id="objectDetail" class="detail-card">
-        <div class="planet-visual placeholder"></div>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark">✦</div>
         <div>
-          <p class="eyebrow">Selecteer iets in de Sky View</p>
-          <h3>Kies een planeet of kosmisch object</h3>
-          <p>Hier komt straks de detailpagina met uitleg, afstand, grootte, zichtbaarheid, AI-gids en premium verdiepingslagen.</p>
+          <p class="brand-kicker">Stage 1A Prototype</p>
+          <h1 class="brand-title">Sky Explorer AR</h1>
         </div>
-      </article>
-    </section>
-
-    <section class="panel grid-panel" aria-labelledby="features-title">
-      <div class="section-heading">
-        <p class="eyebrow">Roadmap</p>
-        <h2 id="features-title">Toekomstige modules</h2>
       </div>
-      <div class="feature-grid">
-        <article><h3>Wat zie jij nu?</h3><p>Een gids die uitlegt welke objecten boven je staan.</p></article>
-        <article><h3>Tijdmachine</h3><p>Bekijk de hemel gisteren, morgen of op een historische datum.</p></article>
-        <article><h3>Kosmische Reis</h3><p>Simuleer afstanden, snelheden en reistijd door het universum.</p></article>
-        <article><h3>Premium Explorer</h3><p>Exoplaneten, zwarte gaten, 3D-flight en educatieve pakketten.</p></article>
-      </div>
-    </section>
+      <button id="themeToggle" class="ghost-button" type="button">Night mode</button>
+    </header>
 
-    <section class="panel security-panel" aria-labelledby="security-title">
-      <div class="section-heading">
-        <p class="eyebrow">Security agent</p>
-        <h2 id="security-title">Security vanaf dag 1</h2>
-      </div>
-      <ul>
-        <li>Geen geheime API-keys in de frontend.</li>
-        <li>Minimale dataverzameling: locatie alleen na toestemming.</li>
-        <li>Content Security Policy toegevoegd in de HTML.</li>
-        <li>Geen externe scripts in deze eerste versie.</li>
-        <li>Future proof voor veilige login, betalingen en backend API.</li>
-      </ul>
-    </section>
-  </main>
+    <main class="main-grid">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Augmented prototype</p>
+          <h2>Explore planets and cosmic objects around you.</h2>
+          <p class="intro">
+            This repaired web prototype uses a live camera view with floating AR-style overlays.
+            Tap any object to see rich detail cards. The next stage will connect this to real astronomical positioning.
+          </p>
+          <div class="hero-actions">
+            <button id="launchArButton" class="primary-button" type="button">Launch AR View</button>
+            <button id="locationButton" class="secondary-button" type="button">Use my location</button>
+          </div>
+          <p id="statusMessage" class="status" role="status">Ready. Camera not started yet.</p>
+        </div>
+      </section>
 
-  <footer>
-    <p>Hemel AR prototype — Stage 1A. Niet wetenschappelijk volledig; bedoeld als testbare productbasis.</p>
-  </footer>
+      <section class="camera-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Live camera overlay</p>
+            <h3>AR View</h3>
+          </div>
+          <span class="live-pill">Live</span>
+        </div>
+
+        <div id="arStage" class="ar-stage">
+          <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
+          <div id="cameraPlaceholder" class="camera-placeholder">
+            <div class="placeholder-inner">
+              <div class="placeholder-icon">◌</div>
+              <p>Tap <strong>Launch AR View</strong> to open your camera.</p>
+              <p class="placeholder-sub">On a phone, allow camera access for the overlay experience.</p>
+            </div>
+          </div>
+
+          <button class="sky-object object-sun" data-object="sun" type="button">Sun</button>
+          <button class="sky-object object-mars" data-object="mars" type="button">Mars</button>
+          <button class="sky-object object-jupiter" data-object="jupiter" type="button">Jupiter</button>
+          <button class="sky-object object-blackhole" data-object="blackhole" type="button">Black Hole</button>
+          <div class="scan-line"></div>
+        </div>
+
+        <p class="helper-text">
+          This is a camera-overlay prototype for testing the experience on your phone. True star alignment and astronomy data come next.
+        </p>
+      </section>
+
+      <section class="detail-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Object detail</p>
+            <h3>Selected Object</h3>
+          </div>
+        </div>
+
+        <article id="detailCard" class="detail-card">
+          <div id="detailVisual" class="detail-visual visual-placeholder"></div>
+          <div class="detail-copy">
+            <p class="eyebrow">Tap an object in the AR View</p>
+            <h4 id="detailTitle">Choose a planet or cosmic object</h4>
+            <p id="detailType" class="detail-type">Prototype object card</p>
+            <p id="detailDescription">
+              The detail card will update when you tap an object inside the camera overlay.
+            </p>
+            <dl class="detail-stats">
+              <div>
+                <dt>Distance</dt>
+                <dd id="detailDistance">—</dd>
+              </div>
+              <div>
+                <dt>Size</dt>
+                <dd id="detailSize">—</dd>
+              </div>
+              <div>
+                <dt>Highlight</dt>
+                <dd id="detailHighlight">—</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
+      </section>
+
+      <section class="feature-panel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Next stages</p>
+            <h3>Planned Modules</h3>
+          </div>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <h4>What are you seeing now?</h4>
+            <p>Real-time explanation of visible planets, stars, and constellations.</p>
+          </article>
+          <article>
+            <h4>Time Machine</h4>
+            <p>Jump through time to see the sky yesterday, tomorrow, or on historical dates.</p>
+          </article>
+          <article>
+            <h4>Cosmic Journey</h4>
+            <p>Visualize scale, distance, and travel time through the universe.</p>
+          </article>
+          <article>
+            <h4>Premium Explorer</h4>
+            <p>Deep-space objects, guided lessons, and richer 3D exploration.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
-# Hemel AR — Web-app MVP
-
-Stage 1A prototype voor een toekomstige AR-app over hemellichamen.
-
-## Bestanden
-
-- `index.html` — hoofdwebsite
-- `styles.css` — visuele stijl
-- `script.js` — interactie en prototype-data
-
-## Security baseline
-
-- Geen externe scripts
-- Geen API keys in frontend
-- Content Security Policy in `index.html`
-- Locatie alleen na expliciete toestemming
-- Demo-data lokaal in JavaScript
-
-## GitHub Pages
-
-Publiceer vanuit branch `main` en folder `/root`.
-
-const objects = [
-  { id: 'sun', name: 'Zon', type: 'Ster', x: 19, y: 28, className: 'sun', distance: '149,6 miljoen km', fact: 'De energiebron van ons zonnestelsel. In AR wordt dit een belangrijk ankerpunt voor dag/nacht en tijdmachine-functies.' },
-  { id: 'mars', name: 'Mars', type: 'Planeet', x: 44, y: 42, className: 'mars', distance: 'Gemiddeld 225 miljoen km', fact: 'De rode planeet. Goede kandidaat voor detailpagina’s met missies, landschap en toekomstige premium content.' },
-  { id: 'jupiter', name: 'Jupiter', type: 'Gasreus', x: 68, y: 31, className: 'jupiter', distance: 'Gemiddeld 778 miljoen km', fact: 'De grootste planeet van ons zonnestelsel, ideaal voor schaalvergelijkingen en visuele impact.' },
-  { id: 'blackhole', name: 'Zwart gat', type: 'Deep-sky object', x: 79, y: 58, className: 'blackhole', distance: 'Educatieve visualisatie', fact: 'Niet zomaar zichtbaar met het blote oog. In deze app gebruiken we dit als educatieve laag, niet als live claim.' }
-];
-
-const skyView = document.querySelector('#skyView');
-const objectDetail = document.querySelector('#objectDetail');
-const statusMessage = document.querySelector('#statusMessage');
-const startSkyButton = document.querySelector('#startSkyButton');
-const locationButton = document.querySelector('#locationButton');
-const nightModeButton = document.querySelector('#nightModeButton');
-
-function renderSky() {
-  objects.forEach((object) => {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = `sky-object ${object.className}`;
-    button.style.left = `${object.x}%`;
-    button.style.top = `${object.y}%`;
-    button.textContent = object.name;
-    button.setAttribute('aria-label', `${object.name} bekijken`);
-    button.addEventListener('click', () => selectObject(object));
-    skyView.appendChild(button);
-  });
-}
-
-function selectObject(object) {
-  objectDetail.innerHTML = `
-    <div class="planet-visual ${object.className}"></div>
-    <div>
-      <p class="eyebrow">${escapeHtml(object.type)}</p>
-      <h3>${escapeHtml(object.name)}</h3>
-      <p><strong>Afstand:</strong> ${escapeHtml(object.distance)}</p>
-      <p>${escapeHtml(object.fact)}</p>
-      <p class="helper-text">Volgende fase: echte data, zichtbaarheid, AI-uitleg, 3D-model en premium verdieping.</p>
-    </div>
-  `;
-  statusMessage.textContent = `${object.name} geselecteerd.`;
-}
-
-function escapeHtml(value) {
-  return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
-}
-
-startSkyButton.addEventListener('click', () => {
-  document.querySelector('#sky-title').scrollIntoView({ behavior: 'smooth' });
-  statusMessage.textContent = 'Sky View geopend. Kies een object.';
-});
-
-locationButton.addEventListener('click', () => {
-  if (!navigator.geolocation) {
-    statusMessage.textContent = 'Locatie wordt niet ondersteund door deze browser.';
-    return;
-  }
-  statusMessage.textContent = 'Locatietoestemming gevraagd...';
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const lat = position.coords.latitude.toFixed(2);
-      const lon = position.coords.longitude.toFixed(2);
-      statusMessage.textContent = `Locatie actief: ${lat}, ${lon}. In Stage 1B koppelen we hier echte hemeldata aan.`;
-    },
-    () => {
-      statusMessage.textContent = 'Locatie niet gedeeld. De app blijft werken in demo-modus.';
-    },
-    { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
-  );
-});
-
-nightModeButton.addEventListener('click', () => {
-  document.body.classList.toggle('light');
-  nightModeButton.textContent = document.body.classList.contains('light') ? 'Donkere modus' : 'Nachtmodus';
-});
-
-renderSky();
-
-# Security Agent Checklist
-
-Deze checklist hoort bij elke stage-gate review.
-
-## Stage 1A
-
-- [x] Geen secrets/API keys in frontend
-- [x] Geen externe JavaScript dependencies
-- [x] Content Security Policy toegevoegd
-- [x] Locatie alleen na user permission
-- [x] Geen accounts/login in prototype
-- [x] Geen betaaldata in prototype
-- [x] Geen persoonlijke data opslaan
-
-## Volgende stages
-
-- [ ] Backend alleen via veilige API
-- [ ] Rate limiting
-- [ ] Input validation
-- [ ] Dependency scanning
-- [ ] Secure payment provider
-- [ ] Privacy policy
-- [ ] Cookie/analytics review
-- [ ] Admin access control
-
-:root {
-  color-scheme: dark;
-  --bg: #080b18;
-  --panel: rgba(255, 255, 255, 0.08);
-  --panel-strong: rgba(255, 255, 255, 0.13);
-  --text: #f5f7ff;
-  --muted: #aeb7d8;
-  --accent: #8cc8ff;
-  --accent-strong: #d7a7ff;
-  --border: rgba(255,255,255,0.16);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-* { box-sizing: border-box; }
-body { margin: 0; background: radial-gradient(circle at top, #182348 0%, var(--bg) 48%, #03040a 100%); color: var(--text); }
-body.light { color-scheme: light; --bg: #eef4ff; --panel: rgba(255,255,255,.82); --panel-strong: #fff; --text:#10172a; --muted:#475569; --border:rgba(15,23,42,.14); background: linear-gradient(180deg, #dbeafe 0%, #f8fafc 100%); }
-.hero { min-height: 76vh; padding: 24px; position: relative; overflow: hidden; }
-.hero::before { content:""; position:absolute; inset:-20%; background-image: radial-gradient(circle, rgba(255,255,255,.75) 1px, transparent 1px); background-size: 54px 54px; opacity:.18; transform: rotate(-12deg); }
-.nav, .hero-content, main, footer { position: relative; z-index: 1; }
-.nav { display:flex; justify-content:space-between; align-items:center; max-width:1120px; margin:0 auto; }
-.brand { font-weight:800; letter-spacing:.02em; }
-.hero-content { max-width: 900px; margin: 12vh auto 0; }
-.eyebrow { text-transform:uppercase; letter-spacing:.16em; color:var(--accent); font-size:.76rem; font-weight:800; }
-h1 { font-size: clamp(3rem, 9vw, 7.8rem); line-height:.88; margin: 8px 0 24px; max-width: 900px; }
-h2 { font-size: clamp(2rem, 4vw, 3.5rem); margin: 0; }
-h3 { margin: 0 0 8px; }
-.intro { max-width: 680px; color: var(--muted); font-size: 1.2rem; line-height: 1.6; }
-.hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
-button { border: 0; border-radius: 999px; padding: 13px 18px; font-weight: 800; cursor: pointer; }
-.primary-button { background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #08111f; }
-.secondary-button, .ghost-button { background: var(--panel); color: var(--text); border:1px solid var(--border); }
-.status, .helper-text { color: var(--muted); }
-main { width:min(1120px, calc(100% - 32px)); margin: 0 auto 48px; display:grid; gap:18px; }
-.panel { background: var(--panel); border:1px solid var(--border); border-radius:28px; padding:24px; backdrop-filter: blur(16px); box-shadow: 0 20px 80px rgba(0,0,0,.24); }
-.section-heading { margin-bottom:18px; }
-.sky-view { min-height: 420px; border-radius: 24px; position:relative; overflow:hidden; background: radial-gradient(circle at 50% 20%, rgba(140,200,255,.16), transparent 28%), linear-gradient(180deg, #050716, #121936); border:1px solid var(--border); }
-.horizon { position:absolute; left:-5%; right:-5%; bottom:-18%; height:42%; border-radius:50% 50% 0 0; background: linear-gradient(180deg, rgba(140,200,255,.12), rgba(23,34,68,.88)); border-top:1px solid rgba(255,255,255,.12); }
-.sky-object { position:absolute; width:58px; height:58px; border-radius:50%; display:grid; place-items:center; color:#fff; font-size:.72rem; font-weight:900; transform: translate(-50%, -50%); border:1px solid rgba(255,255,255,.32); box-shadow: 0 0 40px rgba(140,200,255,.35); background: radial-gradient(circle at 30% 25%, #fff, #8cc8ff 28%, #263b86 70%); }
-.sky-object.sun { width:76px; height:76px; background: radial-gradient(circle, #fff8bb 0%, #ffb12a 40%, #ff5d25 70%); box-shadow: 0 0 80px rgba(255,177,42,.75); color:#2b1200; }
-.sky-object.mars { background: radial-gradient(circle at 30% 30%, #ffd0a2, #c25b32 45%, #5e221c 80%); }
-.sky-object.jupiter { width:70px; height:70px; background: linear-gradient(180deg, #d8b58a, #8f6243, #f1d3a7, #6d4a3a); }
-.sky-object.blackhole { background: radial-gradient(circle, #000 28%, #ff9d34 31%, #7137ff 48%, #050510 68%); }
-.detail-card { display:grid; grid-template-columns: 160px 1fr; gap:22px; align-items:center; background: var(--panel-strong); border:1px solid var(--border); border-radius:24px; padding:20px; }
-.planet-visual { width:140px; height:140px; border-radius:50%; background: radial-gradient(circle at 30% 25%, #fff, #8cc8ff 25%, #1d2c62 70%); box-shadow:0 0 50px rgba(140,200,255,.32); }
-.planet-visual.placeholder { opacity:.45; }
-.feature-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
-.feature-grid article { background: var(--panel-strong); padding:18px; border-radius:18px; border:1px solid var(--border); }
-.security-panel li { margin: 8px 0; color: var(--muted); }
-footer { width:min(1120px, calc(100% - 32px)); margin: 0 auto 32px; color: var(--muted); }
-@media (max-width: 760px) { .detail-card, .feature-grid { grid-template-columns: 1fr; } .hero { min-height: auto; } .hero-content { margin-top:64px; } }

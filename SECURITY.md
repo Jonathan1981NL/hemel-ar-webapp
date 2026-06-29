@@ -1,24 +1,22 @@
 # Security Agent Checklist
 
-Deze checklist hoort bij elke stage-gate review.
+This file is for internal project governance only and should not be shown inside the visible interface.
 
-## Stage 1A
+## Stage 1A repair
 
-- [x] Geen secrets/API keys in frontend
-- [x] Geen externe JavaScript dependencies
-- [x] Content Security Policy toegevoegd
-- [x] Locatie alleen na user permission
-- [x] Geen accounts/login in prototype
-- [x] Geen betaaldata in prototype
-- [x] Geen persoonlijke data opslaan
+- [x] No secrets or API keys in the frontend
+- [x] No external JavaScript dependencies
+- [x] Content Security Policy included
+- [x] Camera and location only after user permission
+- [x] No account or payment data in this prototype
+- [x] No visible security/debug section in the UI
 
-## Volgende stages
+## Next stages
 
-- [ ] Backend alleen via veilige API
+- [ ] Secure backend/API layer
 - [ ] Rate limiting
 - [ ] Input validation
 - [ ] Dependency scanning
-- [ ] Secure payment provider
-- [ ] Privacy policy
-- [ ] Cookie/analytics review
+- [ ] Privacy policy and analytics review
+- [ ] Payment security architecture
 - [ ] Admin access control

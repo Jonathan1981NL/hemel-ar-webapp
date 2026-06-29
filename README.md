@@ -1,12 +1,11 @@
-# Sky Explorer AR — Stage 1E
+# Sky Explorer AR — Stage 1F
 
-Large visual and functionality update.
+Recovery build after Stage 1E issues.
 
-- Rotating celestial-body spheres instead of rectangular cards.
-- Earth comparison sphere beside selected object.
-- Planet-specific visuals for Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, Neptune and Black Hole.
-- Story, Data and Scale tabs.
-- Larger local information database in app-data.js.
-- Simplified real Sun-position calculation after GPS permission.
+- Demo Sweep works without camera/motion permissions.
+- Buttons have robust high-contrast styling.
+- Rotating celestial spheres for selected objects.
+- Edge indicators, finder, tours and object inspector.
+- Approximate Sun position after GPS.
 
-Extract directly into C:\Users\Admin\Documents\GitHub\hemel-ar-webapp-live, then commit and push.
+Deploy by extracting into C:\Users\Admin\Documents\GitHub\hemel-ar-webapp-live, then commit and push.

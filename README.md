@@ -1,31 +1,28 @@
-# Sky Explorer AR — Stage 1C
+# Sky Explorer AR — Stage 1D
 
-Premium AR-cockpit update.
+Larger product update for the AR celestial-bodies app.
 
-## What changed
+## Major changes
 
-- Full-screen AR experience.
-- Object details now stay inside the AR screen.
-- Orientation-aware sky dome: objects move relative to phone heading/pitch.
-- Demo sky positions for Sun, Moon, Mars, Jupiter, Saturn and Black Hole.
-- Richer premium UI and HUD.
-- Guide bubble and object detail sheet.
-- Explicit camera, motion and location permission flows.
+- Compact HUD to leave more camera space.
+- Edge indicators show where major off-screen celestial objects are located.
+- Target lock mode: choose an object and follow arrows to find it.
+- Finder drawer with search, featured objects, bright objects, deep-space objects and all catalog.
+- Local offline catalog in `app-data.js` with many prototype records.
+- Guided journey concepts: Tonight's Sky, Kids Cosmic Hunt, Scale Shock, Invisible Universe.
+- Premium UI pass inspired by successful full-screen camera apps, but with our own guided-cosmic-discovery angle.
+- Better sensor smoothing and North calibration.
+- Object details remain inside the AR interface.
 
-## Important technical note
+## Current limitation
 
-This is still a web prototype. It uses device orientation as a sky-dome approximation.  
-The next major milestone is replacing demo azimuth/altitude values with real astronomical calculations.
+This is still a web prototype and uses demo azimuth/altitude values.
+The next technical milestone is a real astronomy positioning engine.
 
 ## Deploy
 
-Copy files into the correct live folder:
+Extract directly into:
 
 `C:\Users\Admin\Documents\GitHub\hemel-ar-webapp-live`
 
-Then:
-
-1. GitHub Desktop
-2. Commit to main
-3. Push origin
-4. Test GitHub Pages
+Then commit and push with GitHub Desktop.

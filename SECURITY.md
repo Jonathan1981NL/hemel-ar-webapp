@@ -1,23 +1,23 @@
 # Security Agent Checklist
 
-Internal only. Do not display this inside the product UI.
+Internal only. Not shown in product UI.
 
-## Stage 1C
+## Stage 1D
 
-- [x] No secrets or API keys in frontend
-- [x] No external dependencies
-- [x] Content Security Policy in index.html
-- [x] Camera requires explicit user action
-- [x] Motion/orientation requires explicit user action
-- [x] Location requires explicit user action
-- [x] No persistent personal data storage
-- [x] No visible security/debug panel in customer UI
-- [x] No account or payment handling yet
+- [x] No secrets or API keys in frontend code
+- [x] No external JS dependencies
+- [x] CSP present in index.html
+- [x] Camera access only after explicit user action
+- [x] Motion access only after explicit user action
+- [x] Location access only after explicit user action
+- [x] Local catalog only; no external data calls
+- [x] No account, payment or persistent personal data
+- [x] Security/debug details are not visible in the customer UI
 
-## Next security gates
+## Next stage security work
 
-- [ ] Review astronomy API / calculation source
-- [ ] Avoid exposing paid API keys in frontend
-- [ ] Add privacy notice before analytics
-- [ ] Threat-model premium feature unlocking
-- [ ] Decide backend proxy architecture
+- [ ] Real astronomy engine source review
+- [ ] Backend proxy decision for protected APIs
+- [ ] Privacy notice before analytics
+- [ ] Premium unlock threat model
+- [ ] PWA permissions review

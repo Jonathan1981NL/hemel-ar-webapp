@@ -3,118 +3,140 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#030711" />
-  <meta name="description" content="Sky Explorer AR — orientation-aware augmented sky prototype." />
+  <meta name="theme-color" content="#02050d" />
+  <meta name="description" content="Sky Explorer AR — guided cosmic discovery prototype." />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
   <title>Sky Explorer AR</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app-shell">
-    <section class="ar-experience" aria-label="Sky Explorer AR experience">
+    <section class="ar-experience" aria-label="Sky Explorer AR">
       <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
+      <canvas id="starCanvas" class="star-canvas" aria-hidden="true"></canvas>
+      <div class="vignette" aria-hidden="true"></div>
 
-      <div id="cameraFallback" class="camera-fallback">
-        <div class="intro-card">
-          <div class="brand-orb"></div>
+      <div id="startOverlay" class="start-overlay">
+        <div class="start-card">
+          <div class="app-orb"></div>
           <p class="kicker">Sky Explorer AR</p>
-          <h1>Move your phone. The sky should move with you.</h1>
-          <p>
-            This build uses a sensor-driven sky dome. Objects have demo azimuth and altitude values,
-            so they shift as your phone orientation changes.
+          <h1>Find the universe around you.</h1>
+          <p class="lead">
+            A guided AR sky cockpit with target arrows, motion-aware objects, search and cinematic object stories.
           </p>
-          <div class="intro-actions">
-            <button id="startButton" class="primary-button" type="button">Start AR</button>
-            <button id="demoButton" class="secondary-button" type="button">Try Demo Sweep</button>
+          <div class="start-actions">
+            <button id="startAr" class="primary-button" type="button">Start AR</button>
+            <button id="demoMode" class="secondary-button" type="button">Demo Sweep</button>
           </div>
-          <p class="permission-note">Camera, location and motion are only used after permission.</p>
+          <p class="small-note">Camera, motion and location are permission-based. This build still uses demo sky positions.</p>
         </div>
       </div>
 
-      <div class="space-gradient" aria-hidden="true"></div>
-      <canvas id="starCanvas" class="star-canvas" aria-hidden="true"></canvas>
-
-      <header class="top-hud">
-        <div class="brand">
-          <span class="brand-icon">✦</span>
-          <div>
-            <strong>Sky Explorer AR</strong>
-            <small id="modeLabel">Stage 1C orientation prototype</small>
-          </div>
+      <header class="topbar">
+        <button id="brandButton" class="brand-pill" type="button">
+          <span class="brand-symbol">✦</span>
+          <span><strong>Sky Explorer</strong><small id="modeText">Stage 1D</small></span>
+        </button>
+        <div class="compact-hud">
+          <span id="headingChip">HDG —</span>
+          <span id="pitchChip">PIT —</span>
+          <span id="gpsChip">GPS off</span>
         </div>
-        <button id="menuButton" class="hud-button" type="button" aria-label="Open mission panel">☰</button>
+        <button id="finderButton" class="round-button" type="button" aria-label="Open finder">⌕</button>
       </header>
 
-      <div class="sensor-hud">
-        <div><span>Heading</span><strong id="headingValue">—</strong></div>
-        <div><span>Pitch</span><strong id="pitchValue">—</strong></div>
-        <div><span>Location</span><strong id="locationValue">Off</strong></div>
+      <div class="mini-compass" aria-label="Mini compass">
+        <div id="compassTrack" class="compass-track">
+          <span>N</span><span>NE</span><span>E</span><span>SE</span><span>S</span><span>SW</span><span>W</span><span>NW</span>
+        </div>
+        <div class="compass-center"></div>
       </div>
 
-      <div class="compass-strip" aria-label="Compass">
-        <span>N</span><span>NE</span><span>E</span><span>SE</span><span>S</span><span>SW</span><span>W</span><span>NW</span>
-        <div id="compassNeedle" class="compass-needle"></div>
-      </div>
+      <div id="edgeLayer" class="edge-layer" aria-label="Off-screen target indicators"></div>
+      <div id="skyLayer" class="sky-layer" aria-label="Augmented celestial objects"></div>
 
-      <div id="skyLayer" class="sky-layer" aria-label="Augmented sky objects"></div>
-
-      <div class="reticle" aria-hidden="true">
+      <div class="center-reticle" aria-hidden="true">
         <span></span>
       </div>
 
-      <div id="guideBubble" class="guide-bubble">
-        <p class="kicker">Live Guide</p>
-        <p id="guideText">Start AR, enable motion, then pan across the room. Objects will shift across your camera view.</p>
-      </div>
+      <section id="guidePanel" class="guide-panel">
+        <p class="kicker">Cosmic Guide</p>
+        <p id="guideText">Start AR and turn slowly. Edge arrows show where to rotate to find major objects.</p>
+      </section>
 
-      <nav class="bottom-controls" aria-label="AR controls">
-        <button id="startButtonMini" class="control-button primary-control" type="button">
-          <span>AR</span><strong>Start</strong>
-        </button>
-        <button id="motionButton" class="control-button" type="button">
-          <span>Motion</span><strong>Enable</strong>
-        </button>
-        <button id="locationButton" class="control-button" type="button">
-          <span>GPS</span><strong>Use</strong>
-        </button>
-        <button id="whatButton" class="control-button" type="button">
-          <span>Guide</span><strong>Now</strong>
-        </button>
+      <nav class="action-bar" aria-label="AR controls">
+        <button id="startMini" class="action-btn primary-action" type="button"><span>AR</span><strong>Start</strong></button>
+        <button id="motionBtn" class="action-btn" type="button"><span>Motion</span><strong>Track</strong></button>
+        <button id="locationBtn" class="action-btn" type="button"><span>GPS</span><strong>Locate</strong></button>
+        <button id="calibrateBtn" class="action-btn" type="button"><span>North</span><strong>Calibrate</strong></button>
+        <button id="tourBtn" class="action-btn premium-action" type="button"><span>Tour</span><strong>Guide</strong></button>
       </nav>
 
-      <aside id="detailSheet" class="detail-sheet" aria-live="polite">
-        <button id="closeSheet" class="close-sheet" type="button" aria-label="Close object detail">×</button>
-        <div id="detailVisual" class="detail-visual visual-sun"></div>
-        <div class="detail-content">
-          <p id="detailEyebrow" class="kicker">Star</p>
-          <h2 id="detailTitle">Sun</h2>
-          <p id="detailDescription">The Sun is the star at the center of our solar system.</p>
-          <div class="detail-grid">
-            <div><span>Distance</span><strong id="detailDistance">149.6m km</strong></div>
-            <div><span>Size</span><strong id="detailSize">1.39m km</strong></div>
-            <div><span>Sky position</span><strong id="detailPosition">Demo</strong></div>
+      <aside id="objectSheet" class="object-sheet" aria-live="polite">
+        <button id="closeObject" class="close-button" type="button" aria-label="Close object detail">×</button>
+        <div id="objectVisual" class="object-visual visual-sun"></div>
+        <div class="sheet-copy">
+          <p id="objectTier" class="kicker">Essential</p>
+          <h2 id="objectTitle">Sun</h2>
+          <p id="objectSummary">The Sun is the star at the center of our solar system.</p>
+          <div class="info-grid">
+            <div><span>Distance</span><strong id="objectDistance">149.6m km</strong></div>
+            <div><span>Size</span><strong id="objectSize">1.39m km</strong></div>
+            <div><span>Find</span><strong id="objectFind">Ahead</strong></div>
           </div>
-          <button id="journeyButton" class="sheet-action" type="button">Start Cosmic Journey</button>
+          <p id="objectStory" class="story-text">Object story appears here.</p>
+          <div class="sheet-actions">
+            <button id="lockTarget" class="sheet-button" type="button">Lock Target</button>
+            <button id="journeyTarget" class="sheet-button secondary-sheet" type="button">Cosmic Journey</button>
+          </div>
         </div>
       </aside>
 
-      <aside id="missionPanel" class="mission-panel">
-        <button id="closeMission" class="close-sheet" type="button" aria-label="Close mission panel">×</button>
-        <p class="kicker">Product cockpit</p>
-        <h2>Stage 1C quality gates</h2>
-        <ul>
-          <li>Objects move relative to phone orientation.</li>
-          <li>Object detail stays inside the AR screen.</li>
-          <li>Camera, location and motion require explicit permission.</li>
-          <li>No visible security/debug section in the product UI.</li>
-          <li>Next stage: replace demo sky positions with real astronomy engine.</li>
-        </ul>
+      <aside id="finderDrawer" class="finder-drawer">
+        <div class="drawer-head">
+          <div>
+            <p class="kicker">Finder</p>
+            <h2>Choose a target</h2>
+          </div>
+          <button id="closeFinder" class="close-button" type="button" aria-label="Close finder">×</button>
+        </div>
+
+        <div class="search-wrap">
+          <input id="searchInput" type="search" placeholder="Search planets, stars, deep space..." autocomplete="off" />
+        </div>
+
+        <div class="finder-tabs">
+          <button class="tab active" data-filter="featured" type="button">Featured</button>
+          <button class="tab" data-filter="bright" type="button">Bright</button>
+          <button class="tab" data-filter="deep" type="button">Deep</button>
+          <button class="tab" data-filter="all" type="button">All</button>
+        </div>
+
+        <div id="targetList" class="target-list"></div>
+
+        <div class="unique-card">
+          <p class="kicker">Unique selling point</p>
+          <h3>See the visible and the invisible sky</h3>
+          <p>Our twist: not only planets you can see, but also hidden layers — black holes, exoplanets, galaxies and guided cosmic journeys.</p>
+        </div>
       </aside>
 
-      <div id="toast" class="toast" role="status">Ready.</div>
+      <aside id="tourDrawer" class="tour-drawer">
+        <div class="drawer-head">
+          <div>
+            <p class="kicker">Guided journeys</p>
+            <h2>Pick a cosmic path</h2>
+          </div>
+          <button id="closeTour" class="close-button" type="button" aria-label="Close tours">×</button>
+        </div>
+        <div id="tourList" class="tour-list"></div>
+      </aside>
+
+      <div id="toast" class="toast" role="status">Ready</div>
     </section>
   </main>
 
+  <script src="app-data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

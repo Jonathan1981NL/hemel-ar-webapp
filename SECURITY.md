@@ -1,8 +1,4 @@
-# Security Agent Checklist
-
-- No external JavaScript dependencies
+- No external dependencies
 - No API keys
-- Camera, motion and GPS only after user action
-- Local catalogue only
-- No account, payment or persistent personal data
-- Calibration data is session-only and not stored
+- Camera/GPS/Motion only after action
+- Local data only

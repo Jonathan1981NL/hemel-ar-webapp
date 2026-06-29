@@ -1,22 +1,22 @@
 # Security Agent Checklist
 
-This file is for internal project governance only and should not be shown inside the visible interface.
+Internal security checklist. This must not be displayed in the visible application UI.
 
-## Stage 1A repair
+## Stage 1B
 
-- [x] No secrets or API keys in the frontend
+- [x] No secrets or API keys in frontend code
 - [x] No external JavaScript dependencies
-- [x] Content Security Policy included
-- [x] Camera and location only after user permission
-- [x] No account or payment data in this prototype
-- [x] No visible security/debug section in the UI
+- [x] Content Security Policy present in `index.html`
+- [x] Camera access only after explicit user action
+- [x] Location access only after explicit user action
+- [x] Motion/orientation access only after explicit user action
+- [x] No login, payment data or personal storage in this prototype
+- [x] Security/debug information not exposed in the interface
 
-## Next stages
+## Stage 1C security tasks
 
-- [ ] Secure backend/API layer
-- [ ] Rate limiting
-- [ ] Input validation
-- [ ] Dependency scanning
-- [ ] Privacy policy and analytics review
-- [ ] Payment security architecture
-- [ ] Admin access control
+- [ ] Review astronomy API/data-source security
+- [ ] Decide whether backend proxy is needed
+- [ ] Prevent API keys from entering frontend
+- [ ] Add basic abuse/rate-limit strategy if external API is used
+- [ ] Draft privacy notice before analytics or account features

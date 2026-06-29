@@ -2,132 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Prototype MVP for an AR space app: explore planets and cosmic objects in an augmented camera overlay." />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Sky Explorer AR prototype: camera-based augmented sky overlay for planets, stars and cosmic objects." />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
-  <title>Sky Explorer AR — Prototype</title>
+  <title>Sky Explorer AR</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="page-shell">
-    <header class="topbar">
-      <div class="brand-wrap">
-        <div class="brand-mark">✦</div>
-        <div>
-          <p class="brand-kicker">Stage 1A Prototype</p>
-          <h1 class="brand-title">Sky Explorer AR</h1>
-        </div>
+  <div class="app">
+    <header class="app-header">
+      <div>
+        <p class="kicker">Sky Explorer AR</p>
+        <h1>Point your phone at the sky.</h1>
       </div>
-      <button id="themeToggle" class="ghost-button" type="button">Night mode</button>
+      <button id="themeToggle" class="icon-button" type="button" aria-label="Toggle theme">☾</button>
     </header>
 
-    <main class="main-grid">
-      <section class="hero-panel">
-        <div class="hero-copy">
-          <p class="eyebrow">Augmented prototype</p>
-          <h2>Explore planets and cosmic objects around you.</h2>
-          <p class="intro">
-            This repaired web prototype uses a live camera view with floating AR-style overlays.
-            Tap any object to see rich detail cards. The next stage will connect this to real astronomical positioning.
-          </p>
-          <div class="hero-actions">
-            <button id="launchArButton" class="primary-button" type="button">Launch AR View</button>
-            <button id="locationButton" class="secondary-button" type="button">Use my location</button>
-          </div>
-          <p id="statusMessage" class="status" role="status">Ready. Camera not started yet.</p>
-        </div>
-      </section>
-
-      <section class="camera-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Live camera overlay</p>
-            <h3>AR View</h3>
-          </div>
-          <span class="live-pill">Live</span>
+    <main class="app-main">
+      <section class="ar-card">
+        <div class="ar-toolbar">
+          <button id="launchArButton" class="primary-button" type="button">Launch AR View</button>
+          <button id="locationButton" class="secondary-button" type="button">Use Location</button>
+          <button id="motionButton" class="secondary-button" type="button">Enable Motion</button>
         </div>
 
-        <div id="arStage" class="ar-stage">
+        <div id="arStage" class="ar-stage" aria-label="Camera based augmented sky overlay">
           <video id="cameraFeed" class="camera-feed" autoplay muted playsinline></video>
+
           <div id="cameraPlaceholder" class="camera-placeholder">
-            <div class="placeholder-inner">
-              <div class="placeholder-icon">◌</div>
-              <p>Tap <strong>Launch AR View</strong> to open your camera.</p>
-              <p class="placeholder-sub">On a phone, allow camera access for the overlay experience.</p>
+            <div class="placeholder-panel">
+              <div class="radar-orbit">
+                <span></span><span></span><span></span>
+              </div>
+              <h2>Augmented sky overlay</h2>
+              <p>Launch the camera, then tap floating objects to explore them.</p>
             </div>
           </div>
 
-          <button class="sky-object object-sun" data-object="sun" type="button">Sun</button>
-          <button class="sky-object object-mars" data-object="mars" type="button">Mars</button>
-          <button class="sky-object object-jupiter" data-object="jupiter" type="button">Jupiter</button>
-          <button class="sky-object object-blackhole" data-object="blackhole" type="button">Black Hole</button>
-          <div class="scan-line"></div>
+          <div class="hud top-left">
+            <span id="locationReadout">Location: not enabled</span>
+            <span id="motionReadout">Motion: not enabled</span>
+          </div>
+
+          <div class="hud top-right">
+            <span id="headingReadout">Heading: demo</span>
+          </div>
+
+          <button class="sky-object object-sun" data-object="sun" type="button">
+            <span class="object-glow"></span><strong>Sun</strong><small>Star</small>
+          </button>
+          <button class="sky-object object-moon" data-object="moon" type="button">
+            <span class="object-glow"></span><strong>Moon</strong><small>Natural satellite</small>
+          </button>
+          <button class="sky-object object-mars" data-object="mars" type="button">
+            <span class="object-glow"></span><strong>Mars</strong><small>Planet</small>
+          </button>
+          <button class="sky-object object-jupiter" data-object="jupiter" type="button">
+            <span class="object-glow"></span><strong>Jupiter</strong><small>Gas giant</small>
+          </button>
+          <button class="sky-object object-blackhole" data-object="blackhole" type="button">
+            <span class="object-glow"></span><strong>Black Hole</strong><small>Extreme object</small>
+          </button>
+
+          <div class="reticle" aria-hidden="true"></div>
+          <div class="scanline" aria-hidden="true"></div>
         </div>
 
-        <p class="helper-text">
-          This is a camera-overlay prototype for testing the experience on your phone. True star alignment and astronomy data come next.
-        </p>
+        <p id="statusMessage" class="status" role="status">Stage 1B ready. Camera, location and motion are permission-based.</p>
       </section>
 
-      <section class="detail-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Object detail</p>
-            <h3>Selected Object</h3>
-          </div>
+      <section class="insight-card">
+        <div class="section-title">
+          <p class="kicker">Object detail</p>
+          <h2 id="detailTitle">Select an object</h2>
         </div>
 
-        <article id="detailCard" class="detail-card">
+        <article class="detail-card">
           <div id="detailVisual" class="detail-visual visual-placeholder"></div>
           <div class="detail-copy">
-            <p class="eyebrow">Tap an object in the AR View</p>
-            <h4 id="detailTitle">Choose a planet or cosmic object</h4>
-            <p id="detailType" class="detail-type">Prototype object card</p>
-            <p id="detailDescription">
-              The detail card will update when you tap an object inside the camera overlay.
-            </p>
-            <dl class="detail-stats">
-              <div>
-                <dt>Distance</dt>
-                <dd id="detailDistance">—</dd>
-              </div>
-              <div>
-                <dt>Size</dt>
-                <dd id="detailSize">—</dd>
-              </div>
-              <div>
-                <dt>Highlight</dt>
-                <dd id="detailHighlight">—</dd>
-              </div>
-            </dl>
+            <p id="detailType" class="detail-type">Tap a floating AR object</p>
+            <p id="detailDescription">Details, scale, distance and guided explanations appear here.</p>
+
+            <div class="stats">
+              <div><span>Distance</span><strong id="detailDistance">—</strong></div>
+              <div><span>Size</span><strong id="detailSize">—</strong></div>
+              <div><span>Visibility</span><strong id="detailVisibility">—</strong></div>
+            </div>
+
+            <button id="whatSeeingButton" class="wide-button" type="button">What am I seeing now?</button>
+            <p id="guideText" class="guide-text">The AI guide layer will later explain visible objects based on your live sky direction.</p>
           </div>
         </article>
       </section>
 
-      <section class="feature-panel">
-        <div class="panel-header">
-          <div>
-            <p class="eyebrow">Next stages</p>
-            <h3>Planned Modules</h3>
-          </div>
-        </div>
-        <div class="feature-grid">
-          <article>
-            <h4>What are you seeing now?</h4>
-            <p>Real-time explanation of visible planets, stars, and constellations.</p>
-          </article>
-          <article>
-            <h4>Time Machine</h4>
-            <p>Jump through time to see the sky yesterday, tomorrow, or on historical dates.</p>
-          </article>
-          <article>
-            <h4>Cosmic Journey</h4>
-            <p>Visualize scale, distance, and travel time through the universe.</p>
-          </article>
-          <article>
-            <h4>Premium Explorer</h4>
-            <p>Deep-space objects, guided lessons, and richer 3D exploration.</p>
-          </article>
+      <section class="roadmap-card">
+        <p class="kicker">Stage-gate roadmap</p>
+        <div class="roadmap-grid">
+          <article><strong>1B</strong><span>Mobile AR overlay, object cards, location/motion permissions</span></article>
+          <article><strong>1C</strong><span>Real sky engine: time, location, azimuth and altitude</span></article>
+          <article><strong>2A</strong><span>Premium visual design, richer object library and guided journeys</span></article>
+          <article><strong>3A</strong><span>PWA install flow, monetization architecture and account model</span></article>
         </div>
       </section>
     </main>

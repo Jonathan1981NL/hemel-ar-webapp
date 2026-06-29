@@ -1,18 +1,25 @@
-# Sky Explorer AR — Web Prototype
+# Sky Explorer AR — Stage 1B
 
-Repaired Stage 1A prototype for a future monetizable AR space app.
+This is the next web-app prototype for the AR celestial-bodies project.
 
-## Included files
+## Stage 1B scope
 
-- `index.html` — main page
-- `styles.css` — visual layout and responsive styling
-- `script.js` — interactivity, detail cards, camera overlay prototype
-- `SECURITY.md` — internal security checklist
+- English user interface
+- Camera-based AR overlay
+- Clickable floating celestial objects
+- Detail cards for Sun, Moon, Mars, Jupiter and Black Hole
+- Permission-based camera, location and motion access
+- No visible security/debug section in the UI
+- Security governance kept in `SECURITY.md`
 
-## Notes
+## Deployment
 
-- English UI
-- Clickable object overlay
-- Camera-based AR-style prototype
-- Security is handled in the background and not displayed in the interface
-- No external scripts or API keys in the frontend
+Use GitHub Desktop:
+
+1. Copy these files into the live project folder.
+2. Commit to `main`.
+3. Push origin.
+4. Wait for GitHub Pages to rebuild.
+
+Live site:
+`https://jonathan1981nl.github.io/hemel-ar-webapp/`

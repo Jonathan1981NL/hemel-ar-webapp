@@ -1,27 +1,38 @@
-# Sky Explorer AR — Stage 2B Flightpath — 2026-06-30
+# Sky Explorer AR — Stage 2C Voyager — 2026-06-30
 
-Major technical/product step.
+Last-night build with a bigger product jump.
 
-## Added
+## Main changes
 
-- AR Flight Journey: red flightpath + moving spaceship between targets.
-- Journey happens in the AR layer, not only in a separate screen.
-- Scale inspector compares selected object with both Earth and Sun.
-- Large stars bigger than the Sun now show a Sun reference.
-- Bright naked-eye Milky Way star database with RA/Dec, magnitude, spectral class and expert notes.
-- GPS updates:
-  - Sun approximate position
-  - Moon simplified position
-  - bright stars from RA/Dec to azimuth/altitude
-- Explore Atlas remains secondary mode.
-
-## Known limitation
-
-Phone compass/orientation accuracy depends on device sensors and browser permissions. For true “spot on” recognition, the next milestone should add calibration against known stars and/or computer vision star-pattern matching.
+- Start page now has one primary button only: Launch.
+- Launch enters Voyager AR immediately.
+- Automatic AR journey:
+  - starts from the Sun;
+  - flies outward through solar-system bodies and Milky Way stars;
+  - red AR flightpath;
+  - moving spaceship;
+  - auto-target lock;
+  - automatic step progression.
+- Calibration mode:
+  - choose a known bright star;
+  - point the phone at it;
+  - tap Align Current View;
+  - heading and pitch offsets are corrected.
+- Direction/positioning:
+  - default approximate location fallback;
+  - GPS refines Sun, Moon and bright-star positions;
+  - bright stars use RA/Dec to local azimuth/altitude.
+- Scale logic:
+  - the Sun is compared only against Earth;
+  - objects larger than the Sun show both Earth and Sun reference;
+  - planets and smaller objects use appropriate compressed scale.
+- Expert database:
+  - expanded bright-star database with magnitude, spectral class, constellation, RA/Dec and expert notes;
+  - larger local deep-sky prototype catalogue with object categories and science notes.
 
 ## Deploy
 
-Extract into:
+Extract directly into:
 
 `C:\Users\Admin\Documents\GitHub\hemel-ar-webapp-live`
 

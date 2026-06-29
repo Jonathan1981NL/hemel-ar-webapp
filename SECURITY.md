@@ -5,3 +5,4 @@
 - Camera, motion and GPS only after user action
 - Local catalogue only
 - No account, payment or persistent personal data
+- Calibration data is session-only and not stored

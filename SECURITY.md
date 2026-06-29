@@ -5,4 +5,3 @@
 - Camera, motion and GPS only after user action
 - Local catalogue only
 - No account, payment or persistent personal data
-- Close controls handled by event delegation

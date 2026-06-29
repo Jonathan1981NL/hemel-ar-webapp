@@ -1,71 +1,73 @@
 <!doctype html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<meta name="theme-color" content="#030712"/>
+<meta name="theme-color" content="#020617"/>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; media-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'">
-<title>Sky Explorer AR — Stage 2A Nova</title>
+<title>Sky Explorer AR — Stage 2B Flightpath</title>
 <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-<main class="app" id="app">
+<main class="app">
   <video id="camera" class="camera" autoplay muted playsinline></video>
   <canvas id="starfield" class="starfield"></canvas>
+  <svg id="flightSvg" class="flight-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <path id="flightPath" d="" />
+  </svg>
+  <div id="ship" class="ship">◆</div>
   <div class="cosmic-bg"></div>
 
   <section id="start" class="start">
     <div class="hero">
-      <div class="version-pill" id="versionPill">Stage 2A Nova — 2026-06-30</div>
-      <div class="hero-system"><span></span><i></i><i></i><i></i></div>
+      <div class="version" id="versionText">Stage 2B Flightpath — 2026-06-30</div>
+      <div class="hero-orbit"><span></span><i></i><i></i><i></i></div>
       <p class="kicker">Sky Explorer AR</p>
-      <h1>Find the sky. Compare the universe.</h1>
-      <p class="lead">AR first. Explore Atlas second. Now with stars from the Milky Way, working journeys and a real scale engine.</p>
+      <h1>Fly through the sky.</h1>
+      <p class="lead">AR journeys now happen in the augmented world: red flightpath, spaceship, target lock and scale comparison against Earth and Sun.</p>
       <div class="actions">
         <button id="startDemo" class="btn primary" type="button">Launch Demo AR</button>
         <button id="startAR" class="btn secondary" type="button">Start Camera AR</button>
-        <button id="startExplore" class="btn ghost" type="button">Open Explore Atlas</button>
+        <button id="startJourney" class="btn gold" type="button">Start Flight Journey</button>
+        <button id="startAtlas" class="btn ghost" type="button">Explore Atlas</button>
       </div>
-      <p class="note">Version shown here confirms GitHub Pages loaded the latest build.</p>
+      <p class="note">Best accuracy needs GPS + motion permission. Known bright stars are positioned from RA/Dec.</p>
     </div>
   </section>
 
   <header class="top">
     <button id="brand" class="brand" type="button"><b>✦</b><span>Sky Explorer</span></button>
-    <div class="chips"><span id="versionChip">2A</span><span id="headingChip">HDG 095°</span><span id="gpsChip">GPS off</span></div>
-    <button id="searchBtn" class="round" type="button">⌕</button>
+    <div class="chips"><span id="versionChip">2B Flightpath</span><span id="headingChip">HDG 095°</span><span id="gpsChip">GPS off</span></div>
+    <button id="finderBtn" class="round" type="button">⌕</button>
   </header>
 
-  <div class="mode-rail">
-    <button id="railAR" class="rail active" type="button">AR</button>
-    <button id="railExplore" class="rail" type="button">Atlas</button>
-    <button id="railJourney" class="rail" type="button">Journey</button>
+  <div class="rail">
+    <button id="modeAR" class="rail-btn active" type="button">AR</button>
+    <button id="modeAtlas" class="rail-btn" type="button">Atlas</button>
+    <button id="modeJourney" class="rail-btn" type="button">Flight</button>
   </div>
 
   <div id="edgeLayer" class="edge-layer"></div>
   <div id="skyLayer" class="sky-layer"></div>
   <div class="reticle"><i></i></div>
 
-  <section class="guide">
-    <p class="kicker">Cosmic Guide</p>
-    <p id="guide">Launch Demo AR. Pick Jupiter, Moon, Sun or Betelgeuse and the scale panel will show a clear Earth comparison.</p>
-  </section>
+  <section class="guide"><p class="kicker">Flight Guide</p><p id="guideText">Start a Flight Journey. The red line and ship show the route to the next celestial target.</p></section>
 
   <nav class="dock">
     <button id="cameraBtn" class="dock-btn" type="button"><span>Camera</span><strong>AR</strong></button>
     <button id="gpsBtn" class="dock-btn" type="button"><span>GPS</span><strong>Locate</strong></button>
     <button id="motionBtn" class="dock-btn" type="button"><span>Motion</span><strong>Track</strong></button>
     <button id="atlasBtn" class="dock-btn" type="button"><span>Atlas</span><strong>Explore</strong></button>
-    <button id="journeyBtn" class="dock-btn gold" type="button"><span>Journey</span><strong>Start</strong></button>
+    <button id="flightBtn" class="dock-btn gold" type="button"><span>Flight</span><strong>Journey</strong></button>
   </nav>
 
   <aside id="inspector" class="panel inspector">
     <button class="close" data-close="inspector" type="button">×</button>
     <div class="scale-stage">
-      <div class="scale-title"><span>True diameter comparison</span><b id="scaleBadge">Compressed visual</b></div>
+      <div class="scale-head"><span>Scale comparison</span><b id="scaleMode">Earth + Sun</b></div>
       <div class="scale-area">
         <div class="body-col"><div id="selectedSphere" class="sphere texture-sun"></div><small id="selectedLabel">Sun</small></div>
         <div class="body-col"><div id="earthSphere" class="sphere texture-earth"></div><small>Earth</small></div>
+        <div class="body-col sun-ref"><div id="sunSphere" class="sphere texture-sun"></div><small>Sun</small></div>
       </div>
       <div class="bar-wrap"><div id="ratioBar" class="ratio-bar"></div></div>
     </div>
@@ -74,59 +76,48 @@
     <p id="objectSummary">Summary</p>
     <div class="facts">
       <div><span>Diameter</span><strong id="diameterFact">—</strong></div>
-      <div><span>vs Earth</span><strong id="ratioFact">—</strong></div>
+      <div><span>vs Earth</span><strong id="earthRatioFact">—</strong></div>
+      <div><span>vs Sun</span><strong id="sunRatioFact">—</strong></div>
+    </div>
+    <div class="facts second">
       <div><span>Distance</span><strong id="distanceFact">—</strong></div>
+      <div><span>Magnitude</span><strong id="magFact">—</strong></div>
+      <div><span>Position</span><strong id="positionFact">—</strong></div>
     </div>
-    <div class="tab-row"><button class="tab active" data-tab="story">Story</button><button class="tab" data-tab="science">Science</button><button class="tab" data-tab="scale">Scale</button></div>
+    <div class="tabs"><button class="tab active" data-tab="story">Story</button><button class="tab" data-tab="science">Expert</button><button class="tab" data-tab="scale">Scale</button></div>
     <div id="tabPanel" class="tab-panel">Story</div>
-    <div class="panel-actions">
-      <button id="lockTarget" class="btn primary" type="button">Lock Target</button>
-      <button id="addToJourney" class="btn secondary" type="button">Use in Journey</button>
-    </div>
+    <div class="actions"><button id="lockBtn" class="btn primary" type="button">Lock Target</button><button id="useJourneyBtn" class="btn secondary" type="button">Use in Flight</button></div>
   </aside>
 
   <aside id="finder" class="panel finder">
     <button class="close" data-close="finder" type="button">×</button>
-    <p class="kicker">Finder</p><h2>Search sky objects</h2>
-    <input id="search" class="search" placeholder="Search planets, stars, galaxies..."/>
-    <div class="filters"><button class="filter active" data-filter="featured">Featured</button><button class="filter" data-filter="stars">Stars</button><button class="filter" data-filter="deep">Deep</button><button class="filter" data-filter="all">All</button></div>
-    <div id="resultList" class="result-list"></div>
+    <p class="kicker">Finder</p><h2>Bright stars and sky objects</h2>
+    <input id="search" class="search" placeholder="Search Sirius, Vega, Betelgeuse, Galaxy..."/>
+    <div class="filters"><button class="filter active" data-filter="bright">Bright stars</button><button class="filter" data-filter="solar">Solar</button><button class="filter" data-filter="deep">Deep</button><button class="filter" data-filter="all">All</button></div>
+    <div id="results" class="results"></div>
   </aside>
 
   <section id="journey" class="journey">
     <button class="close" data-close="journey" type="button">×</button>
     <div class="journey-card">
-      <p class="kicker">Guided Journey</p>
-      <h2 id="journeyTitle">Scale Shock</h2>
-      <p id="journeyDesc">Compare objects step by step.</p>
-      <div class="journey-progress"><div id="journeyProgress"></div></div>
+      <p class="kicker">AR Flight Journey</p>
+      <h2 id="journeyTitle">Scale Shock Flight</h2>
+      <p id="journeyDesc">Fly between objects in AR.</p>
+      <div class="progress"><div id="journeyProgress"></div></div>
       <div id="journeyStep" class="journey-step">Step</div>
-      <div class="journey-actions">
-        <button id="prevStep" class="btn ghost" type="button">Back</button>
-        <button id="nextStep" class="btn primary" type="button">Next Target</button>
-      </div>
+      <div class="journey-actions"><button id="prevStep" class="btn ghost" type="button">Back</button><button id="nextStep" class="btn primary" type="button">Next Flight Target</button></div>
       <div id="journeyChoices" class="journey-choices"></div>
     </div>
   </section>
 
   <section id="atlas" class="atlas">
     <button class="close" data-close="atlas" type="button">×</button>
-    <div class="atlas-head">
-      <div><p class="kicker">Explore Atlas</p><h2>Non-AR Observatory</h2><p>Secondary mode for planets, Milky Way stars, galaxies and educational browsing.</p></div>
-      <button id="backToAR" class="btn primary" type="button">Back to AR</button>
-    </div>
-    <div class="atlas-grid">
-      <div class="atlas-visual"><div id="orrery" class="orrery"></div></div>
-      <div class="atlas-list">
-        <input id="atlasSearch" class="search" placeholder="Search the atlas..."/>
-        <div id="atlasResults" class="result-list"></div>
-      </div>
-    </div>
+    <div class="atlas-head"><div><p class="kicker">Explore Atlas</p><h2>Expert Observatory</h2><p>Secondary non-AR mode with known bright stars, solar-system bodies and prototype deep-sky catalogue.</p></div><button id="backToAR" class="btn primary" type="button">Back to AR</button></div>
+    <div class="atlas-grid"><div class="atlas-visual"><div id="orrery" class="orrery"></div></div><div class="atlas-list"><input id="atlasSearch" class="search" placeholder="Search atlas..."/><div id="atlasResults" class="results"></div></div></div>
   </section>
 
   <div id="toast" class="toast">Ready</div>
 </main>
 <script src="app-data.js"></script>
 <script src="script.js"></script>
-</body>
-</html>
+</body></html>

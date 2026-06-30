@@ -1,15 +1,30 @@
-# Sky Explorer AR — Stage 2D Stable AR — 2026-06-30
+# Sky Explorer AR — Stage 2E Horizon — 2026-06-30
 
-Stabilisation build after Stage 2C regression.
+Final recovery/sprint build.
 
-## Critical fixes
+## Core corrections
 
-- Launch starts AR mode only.
-- Journey is optional and does not start by default.
-- Flightpath and spaceship are hidden unless Voyager is explicitly opened.
-- Celestial bodies are visible immediately after Launch AR.
-- Wider AR field-of-view and fallback sky rendering to avoid empty screen.
-- Finder, Atlas, Calibration and Voyager remain available inside the app.
+- AR is primary.
+- Launch AR also requests motion tracking so phone movement can drive the sky.
+- No random demo sweep by default.
+- 3D Voyager is optional and opens only when selected.
+- AR object sizes are proportional but screen-safe:
+  - Jupiter appears larger than Moon/Mars;
+  - Sun is large but not screen-breaking;
+  - stars are screen-safe.
+- Correct scale rule:
+  - Sun is compared only with Earth.
+  - Objects larger than the Sun are compared with the Sun.
+  - Everything else is compared with Earth.
+- Better graphics:
+  - Sun has animated flare corona.
+  - Jupiter has bands and a Great Red Spot.
+  - Saturn has rings.
+  - Atmospheric planets have cloud overlays.
+- Larger expert database:
+  - solar-system bodies;
+  - bright stars with RA/Dec, magnitude, spectral class, constellation and expert notes;
+  - 2,200 prototype deep-sky records.
 
 ## Deploy
 

@@ -1,4 +1,5 @@
 - No external dependencies
 - No API keys
-- Camera/GPS/Motion only after action
-- Local data only
+- Camera, motion and GPS only after user action
+- Local database only
+- Calibration is session-only
